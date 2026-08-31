@@ -1,0 +1,2689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Product Passport — Sopra Steria</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root {
+    --ss-red: #D31E1E;
+    --ss-orange: #FF6B2B;
+    --ss-purple-deep: #4D1C87;
+    --ss-purple: #7E00B5;
+    --ss-magenta: #AE1F83;
+    --ss-gold: #E6B800;
+    --ss-dark: #1A1A2E;
+    --ss-gray: #F5F5F8;
+    --ss-mid: #6B6B80;
+    --ss-border: #E2E2EA;
+    --compliant: #1A9B5F;
+    --partial: #D97706;
+    --missing: #C0392B;
+    --future: #4D1C87;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #F5F5F8; color: var(--ss-dark); font-size: 14px; line-height: 1.5; }
+
+  /* TOP NAV */
+  .topnav {
+    background: linear-gradient(135deg, var(--ss-red) 0%, var(--ss-orange) 100%);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 28px; height: 56px; position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  }
+  .topnav-brand { display: flex; align-items: center; gap: 14px; }
+  /* NAV */
+  .topnav-logo { display: flex; align-items: center; }
+  /* ─── Replace the <img> src with your actual file path once you have it ─── */
+  .ss-logo-img { height: 26px; width: auto; mix-blend-mode: screen; display: block; }
+  .topnav-divider { width: 1px; height: 22px; background: rgba(255,255,255,0.28); margin: 0 16px; }
+  .topnav-title { color: rgba(255,255,255,0.82); font-size: 13px; font-weight: 400; letter-spacing: 0.3px; }
+  .topnav-nav { display: flex; align-items: center; gap: 2px; }
+  .nav-btn {
+    background: none; border: none; color: rgba(255,255,255,0.78);
+    font-size: 13px; font-weight: 500; padding: 8px 14px; border-radius: 5px;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .nav-btn:hover, .nav-btn.active { background: rgba(255,255,255,0.14); color: white; }
+  .nav-btn .caret { font-size: 9px; opacity: 0.7; }
+  .nav-group { position: relative; }
+  .nav-group:hover .nav-dropdown,
+  .nav-group:focus-within .nav-dropdown { display: block; }
+  .nav-dropdown {
+    display: none; position: absolute; top: calc(100% + 6px); left: 0;
+    background: white; border-radius: 9px; min-width: 210px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.14); padding: 6px;
+    border: 1px solid var(--ss-border); z-index: 300;
+  }
+  .nav-dropdown-item {
+    display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+    border-radius: 6px; font-size: 13px; font-weight: 500;
+    color: var(--ss-dark); cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .nav-dropdown-item i { color: var(--ss-purple-deep); width: 16px; text-align: center; font-size: 13px; }
+  .nav-dropdown-item:hover { background: #EEE7F8; color: var(--ss-purple-deep); }
+  .nav-dropdown-sep { height: 1px; background: var(--ss-border); margin: 4px 0; }
+  .topnav-right { display: flex; align-items: center; gap: 8px; }
+  .nav-icon-btn {
+    height: 30px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.28);
+    background: rgba(255,255,255,0.12); color: white; font-size: 12px; font-weight: 500;
+    display: flex; align-items: center; gap: 6px; padding: 0 12px;
+    cursor: pointer; transition: all 0.15s; flex-shrink: 0; white-space: nowrap;
+  }
+  .nav-icon-btn:hover { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.5); }
+  .nav-icon-btn i { font-size: 12px; }
+  .topnav-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.25); margin: 0 4px; }
+  .persona-select {
+    background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.26);
+    color: white; font-size: 12px; font-weight: 500; padding: 6px 10px;
+    border-radius: 5px; cursor: pointer; outline: none; max-width: 170px;
+  }
+  .persona-select option { background: #1A1A2E; color: white; }
+  .user-badge {
+    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+    background: rgba(255,255,255,0.2); border: 1.5px solid rgba(255,255,255,0.38);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 11px; letter-spacing: 0.5px;
+  }
+
+  /* PAGES */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* LAYOUT */
+  .layout { display: flex; min-height: calc(100vh - 56px); }
+  .sidebar {
+    width: 216px; background: white; border-right: 1px solid var(--ss-border);
+    padding: 18px 0; flex-shrink: 0; position: sticky; top: 56px;
+    height: calc(100vh - 56px); overflow-y: auto;
+  }
+  .sidebar-section { padding: 0 14px 6px; margin-top: 14px; }
+  .sidebar-section-label {
+    font-size: 10px; font-weight: 700; color: var(--ss-mid);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;
+    padding: 0 6px;
+  }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+    border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;
+    color: var(--ss-mid); transition: all 0.15s; margin-bottom: 1px;
+  }
+  .sidebar-item:hover { background: var(--ss-gray); color: var(--ss-dark); }
+  .sidebar-item.active { background: #EEE7F8; color: var(--ss-purple-deep); font-weight: 600; }
+  .sidebar-item .si-icon { width: 18px; text-align: center; font-size: 13px; flex-shrink: 0; }
+  .content { flex: 1; padding: 30px 34px; max-width: 1180px; }
+
+  /* CARDS */
+  .card {
+    background: white; border-radius: 10px; border: 1px solid var(--ss-border);
+    padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .card-title { font-size: 15px; font-weight: 700; color: var(--ss-dark); }
+  .card-subtitle { font-size: 12px; color: var(--ss-mid); margin-top: 3px; }
+
+  /* PAGE HEADER */
+  .page-header { margin-bottom: 26px; }
+  .page-header h1 { font-size: 22px; font-weight: 800; color: var(--ss-dark); letter-spacing: -0.3px; }
+  .page-header p { color: var(--ss-mid); font-size: 13px; margin-top: 5px; }
+  .breadcrumb { font-size: 12px; color: var(--ss-mid); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .breadcrumb .bc-link { color: var(--ss-purple); cursor: pointer; font-weight: 500; }
+  .breadcrumb .bc-link:hover { text-decoration: underline; }
+  .breadcrumb i { font-size: 9px; }
+
+  /* STAT GRID */
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card {
+    background: white; border-radius: 10px; border: 1px solid var(--ss-border);
+    padding: 20px; display: flex; align-items: center; gap: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .stat-icon {
+    width: 44px; height: 44px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; flex-shrink: 0;
+  }
+  .stat-icon.red { background: #FDECEA; color: var(--missing); }
+  .stat-icon.purple { background: #EEE7F8; color: var(--ss-purple-deep); }
+  .stat-icon.green { background: #D4F0E3; color: var(--compliant); }
+  .stat-icon.gold { background: #FEF6D8; color: var(--ss-gold); }
+  .stat-value { font-size: 26px; font-weight: 800; color: var(--ss-dark); line-height: 1; }
+  .stat-label { font-size: 12px; color: var(--ss-mid); margin-top: 4px; }
+
+  /* TABLE */
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th {
+    font-size: 11px; font-weight: 700; color: var(--ss-mid); text-transform: uppercase;
+    letter-spacing: 0.6px; padding: 10px 14px; border-bottom: 2px solid var(--ss-border);
+    text-align: left; background: var(--ss-gray);
+  }
+  .data-table th:first-child { border-radius: 6px 0 0 0; }
+  .data-table th:last-child { border-radius: 0 6px 0 0; }
+  .data-table td { padding: 14px; border-bottom: 1px solid var(--ss-border); vertical-align: middle; font-size: 13px; }
+  .data-table tr:hover td { background: #FAFAFA; cursor: pointer; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .product-name { font-weight: 700; font-size: 14px; color: var(--ss-purple-deep); }
+  .product-sub { font-size: 12px; color: var(--ss-mid); margin-top: 2px; }
+  .mono { font-family: 'Courier New', monospace; font-size: 11px; color: var(--ss-mid); }
+
+  /* STATUS BADGE */
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.2px;
+  }
+  .badge i { font-size: 8px; }
+  .badge.compliant { background: #D4F0E3; color: #0E6B42; }
+  .badge.partial { background: #FEF0D8; color: #92400E; }
+  .badge.missing { background: #FDECEA; color: #991B1B; }
+  .badge.future { background: #EEE7F8; color: var(--ss-purple-deep); }
+
+  /* SCORE BAR */
+  .score-bar-wrap { display: flex; align-items: center; gap: 10px; }
+  .score-bar-bg { flex: 1; background: var(--ss-border); border-radius: 3px; height: 7px; }
+  .score-bar-fill { height: 7px; border-radius: 3px; transition: width 0.6s ease; }
+  .score-num { font-size: 12px; font-weight: 700; width: 34px; text-align: right; }
+
+  /* GUIDE PAGE */
+  .guide-section { margin-bottom: 28px; }
+  .guide-section-title { font-size: 16px; font-weight: 800; color: var(--ss-dark); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; padding-bottom: 10px; border-bottom: 2px solid var(--ss-border); }
+  .guide-section-title i { color: var(--ss-purple-deep); }
+  .component-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 16px; }
+  .component-card { background: white; border: 1.5px solid var(--ss-border); border-radius: 9px; padding: 16px; text-align: center; }
+  .component-card.highlight { border-color: var(--ss-purple-deep); background: #F8F5FD; }
+  .component-num { width: 28px; height: 28px; border-radius: 50%; background: var(--ss-purple-deep); color: white; font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+  .component-icon { font-size: 20px; color: var(--ss-purple-deep); margin-bottom: 8px; }
+  .component-name { font-weight: 700; font-size: 12px; color: var(--ss-dark); margin-bottom: 5px; }
+  .component-desc { font-size: 11px; color: var(--ss-mid); line-height: 1.5; }
+  .qr-section { display: grid; grid-template-columns: 140px 1fr; gap: 24px; align-items: start; }
+  .qr-box { background: white; border: 2px solid var(--ss-dark); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .qr-label { font-size: 10px; font-weight: 700; color: var(--ss-mid); text-transform: uppercase; letter-spacing: 0.5px; }
+  .deliverable-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .deliverable-table th { background: var(--ss-gray); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--ss-mid); padding: 9px 12px; border-bottom: 2px solid var(--ss-border); text-align: left; }
+  .deliverable-table td { padding: 11px 12px; border-bottom: 1px solid var(--ss-border); vertical-align: top; line-height: 1.5; }
+  .deliverable-table tr:last-child td { border-bottom: none; }
+
+  /* CHECKLIST */
+  .checklist-layout { display: grid; grid-template-columns: 240px 1fr; gap: 24px; align-items: start; }
+  .checklist-ring-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; position: sticky; top: 80px; }
+  .checklist-rating { font-size: 13px; font-weight: 700; text-align: center; padding: 8px 16px; border-radius: 6px; }
+  .checklist-groups { display: flex; flex-direction: column; gap: 16px; }
+  .checklist-group-title { font-size: 12px; font-weight: 700; color: var(--ss-mid); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .checklist-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--ss-border); cursor: pointer; }
+  .checklist-item:last-child { border-bottom: none; }
+  .checklist-item input[type=checkbox] { width: 16px; height: 16px; margin-top: 1px; cursor: pointer; accent-color: var(--ss-purple-deep); flex-shrink: 0; }
+  .checklist-item label { font-size: 13px; color: var(--ss-dark); cursor: pointer; line-height: 1.5; flex: 1; }
+  .checklist-item label .item-ref { font-size: 11px; color: var(--ss-purple); font-weight: 600; display: block; margin-top: 2px; }
+  .checklist-item.checked label { color: var(--ss-mid); text-decoration: line-through; }
+
+  /* GUIDED TOUR */
+  .tour-bar {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 500;
+    background: var(--ss-dark); color: white; padding: 16px 28px;
+    display: none; align-items: center; gap: 24px;
+    border-top: 3px solid var(--ss-purple-deep);
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.25);
+  }
+  .tour-bar.active { display: flex; }
+  .tour-progress-wrap { min-width: 170px; flex-shrink: 0; }
+  .tour-step-label { font-size: 10px; color: rgba(255,255,255,0.45); font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+  .tour-track { height: 3px; background: rgba(255,255,255,0.12); border-radius: 2px; }
+  .tour-fill { height: 3px; background: var(--ss-gold); border-radius: 2px; transition: width 0.4s ease; }
+  .tour-body { flex: 1; }
+  .tour-title { font-size: 14px; font-weight: 700; color: white; margin-bottom: 4px; }
+  .tour-text { font-size: 13px; color: rgba(255,255,255,0.72); line-height: 1.55; }
+  .tour-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+  .tour-btn { padding: 8px 18px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+  .tour-btn.t-skip { background: transparent; color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.15); }
+  .tour-btn.t-skip:hover { color: white; border-color: rgba(255,255,255,0.4); }
+  .tour-btn.t-prev { background: rgba(255,255,255,0.1); color: white; }
+  .tour-btn.t-prev:hover { background: rgba(255,255,255,0.18); }
+  .tour-btn.t-next { background: var(--ss-purple-deep); color: white; }
+  .tour-btn.t-next:hover { background: #3D1570; }
+  .tour-btn.t-finish { background: var(--compliant); color: white; }
+  .tour-btn.t-finish:hover { background: #157A4A; }
+  .tour-highlight {
+    outline: 2.5px solid var(--ss-gold) !important;
+    outline-offset: 4px !important;
+    box-shadow: 0 0 0 6px rgba(230,184,0,0.15) !important;
+    border-radius: 6px;
+    animation: throb 2s ease-in-out infinite;
+  }
+  @keyframes throb {
+    0%,100% { box-shadow: 0 0 0 4px rgba(230,184,0,0.15); }
+    50%      { box-shadow: 0 0 0 10px rgba(230,184,0,0.05); }
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(26,26,46,0.55);
+    z-index: 600; display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(2px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: white; border-radius: 14px; width: 540px; max-width: 92vw;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.2); overflow: hidden;
+  }
+  .modal-header {
+    padding: 22px 26px 18px; border-bottom: 1px solid var(--ss-border);
+    display: flex; align-items: flex-start; gap: 14px;
+  }
+  .modal-header-icon {
+    width: 46px; height: 46px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 20px;
+  }
+  .modal-header-icon.purple { background: #EEE7F8; color: var(--ss-purple-deep); }
+  .modal-header-icon.blue   { background: #DBEAFE; color: #1D4ED8; }
+  .modal-title { font-size: 17px; font-weight: 800; color: var(--ss-dark); }
+  .modal-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: #FEF0D8; color: #92400E; font-size: 11px; font-weight: 700;
+    padding: 3px 9px; border-radius: 4px; margin-top: 5px;
+  }
+  .modal-body { padding: 22px 26px; }
+  .modal-desc { font-size: 13px; line-height: 1.75; color: var(--ss-dark); margin-bottom: 18px; }
+  .modal-feature-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .modal-feature {
+    display: flex; align-items: flex-start; gap: 11px;
+    background: var(--ss-gray); border-radius: 8px; padding: 11px 14px; font-size: 13px;
+  }
+  .modal-feature i { color: var(--ss-purple-deep); font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+  .modal-feature-text { line-height: 1.55; color: var(--ss-dark); }
+  .modal-feature-text strong { font-weight: 700; }
+  .modal-footer {
+    padding: 16px 26px; border-top: 1px solid var(--ss-border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-eta { font-size: 12px; color: var(--ss-mid); display: flex; align-items: center; gap: 6px; }
+
+  /* MERGE PAGE */
+  .merge-product-row { display:flex; align-items:center; gap:10px; }
+  .merge-product-num { width:26px; height:26px; border-radius:50%; background:var(--ss-purple-deep); color:white; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .merge-remove-btn { background:none; border:1px solid var(--ss-border); border-radius:5px; color:var(--ss-mid); font-size:12px; padding:5px 10px; cursor:pointer; flex-shrink:0; transition:all 0.15s; }
+  .merge-remove-btn:hover { border-color:var(--missing); color:var(--missing); }
+  .merge-remove-btn:disabled { opacity:0.3; cursor:not-allowed; }
+  .merge-step { background: white; border: 1px solid var(--ss-border); border-radius: 10px; padding: 22px; margin-bottom: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+  .merge-step-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--ss-purple-deep); color: white; font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .step-title { font-size: 15px; font-weight: 700; color: var(--ss-dark); }
+  .step-sub { font-size: 12px; color: var(--ss-mid); margin-top: 2px; }
+  .merge-selectors { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: center; }
+  .merge-vs { text-align: center; font-size: 11px; font-weight: 700; color: var(--ss-mid); text-transform: uppercase; letter-spacing: 1px; }
+  .merge-table { width: 100%; border-collapse: collapse; }
+  .merge-table th { font-size: 11px; font-weight: 700; color: var(--ss-mid); text-transform: uppercase; letter-spacing: 0.5px; padding: 9px 12px; border-bottom: 2px solid var(--ss-border); text-align: left; background: var(--ss-gray); }
+  .merge-table td { padding: 11px 12px; border-bottom: 1px solid var(--ss-border); font-size: 13px; vertical-align: middle; }
+  .merge-table tr:last-child td { border-bottom: none; }
+  .merge-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
+  .merge-badge.match { background: #D4F0E3; color: #0E6B42; }
+  .merge-badge.resolved { background: #DBEAFE; color: #1D4ED8; }
+  .merge-badge.conflict { background: #FDECEA; color: #991B1B; }
+  .merged-val { font-weight: 700; color: var(--ss-purple-deep); }
+  .merge-preview { background: #F8F5FD; border: 1.5px solid var(--ss-purple-deep); border-radius: 10px; padding: 20px; }
+  .preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+  .preview-item { background: white; border-radius: 7px; padding: 12px; border: 1px solid var(--ss-border); }
+  .preview-item-label { font-size: 11px; font-weight: 700; color: var(--ss-mid); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .preview-item-value { font-size: 14px; font-weight: 700; color: var(--ss-dark); }
+
+  /* CATEGORY ACCORDION */
+  .cat-accordion { border: 1px solid var(--ss-border); border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
+  .cat-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px; cursor: pointer; background: white; transition: background 0.15s;
+    border-bottom: 1px solid transparent;
+  }
+  .cat-header:hover { background: var(--ss-gray); }
+  .cat-header.open { border-bottom: 1px solid var(--ss-border); background: #F8F5FD; }
+  .cat-header-left { display: flex; align-items: center; gap: 12px; }
+  .cat-icon {
+    width: 36px; height: 36px; background: var(--ss-gray); border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; color: var(--ss-purple-deep); flex-shrink: 0;
+  }
+  .cat-name { font-weight: 700; font-size: 14px; color: var(--ss-dark); }
+  .cat-count { font-size: 12px; color: var(--ss-mid); margin-top: 2px; }
+  .cat-chevron { font-size: 11px; color: var(--ss-mid); transition: transform 0.2s; }
+  .cat-header.open .cat-chevron { transform: rotate(180deg); }
+  .cat-body { padding: 16px 18px; background: white; display: none; }
+  .cat-body.open { display: block; }
+
+  /* ATTRIBUTE ROW */
+  .attr-row {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 14px 0; border-bottom: 1px solid var(--ss-border); gap: 20px;
+  }
+  .attr-row:last-child { border-bottom: none; padding-bottom: 4px; }
+  .attr-left { flex: 1; }
+  .attr-name { font-size: 13px; font-weight: 600; color: var(--ss-dark); }
+  .attr-desc { font-size: 12px; color: var(--ss-mid); margin-top: 4px; line-height: 1.55; }
+  .attr-reg { font-size: 11px; color: var(--ss-purple); margin-top: 5px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+  .attr-right { display: flex; flex-direction: column; align-items: flex-end; gap: 7px; min-width: 150px; }
+  .attr-value { font-size: 15px; font-weight: 700; color: var(--ss-dark); }
+  .attr-unit { font-size: 11px; color: var(--ss-mid); margin-top: -4px; }
+  .ai-tip {
+    background: #F8F5FD; border-radius: 7px; padding: 10px 14px; margin-top: 10px;
+    border-left: 3px solid var(--ss-purple-deep);
+  }
+  .ai-tip-label {
+    font-size: 10px; font-weight: 700; color: var(--ss-purple-deep);
+    text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 5px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .ai-tip-text { font-size: 12px; color: var(--ss-dark); line-height: 1.6; }
+
+  /* EXEC SUMMARY */
+  .exec-summary {
+    background: linear-gradient(135deg, #F2EDF9 0%, #FDF8E8 100%);
+    border: 1px solid #DDD6F8; border-radius: 9px; padding: 18px 22px;
+    margin-bottom: 24px; display: flex; align-items: flex-start; gap: 14px;
+  }
+  .exec-ai-badge {
+    background: var(--ss-purple-deep); color: white; padding: 5px 11px;
+    border-radius: 5px; font-size: 10px; font-weight: 700; white-space: nowrap;
+    letter-spacing: 0.6px; display: flex; align-items: center; gap: 5px; flex-shrink: 0;
+  }
+  .exec-text { font-size: 13px; line-height: 1.75; color: var(--ss-dark); }
+  .exec-text strong { color: var(--ss-purple-deep); font-weight: 700; }
+
+  /* COMPLIANCE RING */
+  .ring-wrap { display: flex; align-items: center; gap: 26px; }
+  .ring-legend-item { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; font-size: 13px; color: var(--ss-dark); }
+  .ring-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+  /* GAP TABLE */
+  .gap-table { width: 100%; border-collapse: collapse; }
+  .gap-table th { font-size: 11px; font-weight: 700; color: var(--ss-mid); text-transform: uppercase; letter-spacing: 0.6px; padding: 9px 12px; border-bottom: 2px solid var(--ss-border); text-align: left; background: var(--ss-gray); }
+  .gap-table td { padding: 12px; border-bottom: 1px solid var(--ss-border); font-size: 13px; vertical-align: middle; }
+  .gap-table tr:last-child td { border-bottom: none; }
+  .priority-tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 700; }
+  .priority-tag.high { background: #FDECEA; color: #991B1B; }
+  .priority-tag.medium { background: #FEF0D8; color: #92400E; }
+  .priority-tag.low { background: #D4F0E3; color: #0E6B42; }
+
+  /* TIMELINE */
+  .timeline { position: relative; padding: 4px 0; }
+  .timeline-track { position: absolute; left: 21px; top: 0; bottom: 0; width: 2px; background: var(--ss-border); }
+  .timeline-item { display: flex; gap: 20px; margin-bottom: 18px; position: relative; }
+  .timeline-dot {
+    width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; margin-top: 4px;
+    border: 2px solid white; z-index: 1; margin-left: 15px;
+  }
+  .timeline-dot.done { background: var(--compliant); box-shadow: 0 0 0 2px var(--compliant); }
+  .timeline-dot.now { background: var(--ss-gold); box-shadow: 0 0 0 2px var(--ss-gold); animation: tpulse 2s infinite; }
+  .timeline-dot.upcoming { background: #CACAD6; box-shadow: 0 0 0 2px #CACAD6; }
+  @keyframes tpulse { 0%,100%{box-shadow:0 0 0 2px var(--ss-gold)} 50%{box-shadow:0 0 0 6px rgba(230,184,0,0.2)} }
+  .timeline-content { flex: 1; background: white; border-radius: 8px; padding: 14px 16px; border: 1px solid var(--ss-border); }
+  .timeline-date { font-size: 11px; font-weight: 700; color: var(--ss-mid); text-transform: uppercase; letter-spacing: 0.6px; display: flex; align-items: center; gap: 6px; }
+  .timeline-title { font-size: 14px; font-weight: 700; margin: 5px 0 6px; color: var(--ss-dark); }
+  .timeline-body { font-size: 12px; color: var(--ss-mid); line-height: 1.6; }
+  .timeline-body strong { color: var(--ss-dark); }
+
+  /* AGENT CARDS */
+  .agent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .agent-card { background: white; border-radius: 10px; border: 1px solid var(--ss-border); padding: 22px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+  .agent-header { display: flex; align-items: flex-start; gap: 13px; margin-bottom: 16px; }
+  .agent-icon { width: 40px; height: 40px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .agent-icon.purple { background: #EEE7F8; color: var(--ss-purple-deep); }
+  .agent-icon.blue { background: #DBEAFE; color: #1D4ED8; }
+  .agent-icon.orange { background: #FFEDD5; color: #C2410C; }
+  .agent-icon.green { background: #D4F0E3; color: var(--compliant); }
+  .agent-name { font-weight: 700; font-size: 14px; color: var(--ss-dark); }
+  .agent-role { font-size: 12px; color: var(--ss-mid); margin-top: 2px; line-height: 1.4; }
+  .agent-status-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .agent-status { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .status-dot.running { background: var(--compliant); animation: sdpulse 1.8s infinite; }
+  .status-dot.waiting { background: var(--ss-gold); }
+  .status-dot.idle { background: #CACAD6; }
+  @keyframes sdpulse { 0%,100%{opacity:1}50%{opacity:0.35} }
+  .agent-meta { font-size: 11px; color: var(--ss-mid); }
+  .agent-log {
+    background: #F8F8FB; border: 1px solid var(--ss-border); border-radius: 6px;
+    padding: 10px 12px; font-size: 11px; font-family: 'Courier New', monospace;
+    color: var(--ss-mid); line-height: 1.8; max-height: 96px; overflow-y: auto;
+  }
+  .log-ok { color: var(--compliant); font-weight: 700; }
+  .log-warn { color: var(--partial); font-weight: 700; }
+  .agent-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; gap: 8px; }
+
+  /* BUTTONS */
+  .btn { padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; letter-spacing: 0.1px; }
+  .btn-primary { background: var(--ss-purple-deep); color: white; }
+  .btn-primary:hover { background: #3D1570; }
+  .btn-outline { background: white; color: var(--ss-purple-deep); border: 1.5px solid var(--ss-purple-deep); }
+  .btn-outline:hover { background: #EEE7F8; }
+  .btn-success { background: var(--compliant); color: white; }
+  .btn-success:hover { background: #157A4A; }
+  .btn-sm { padding: 6px 12px; font-size: 11px; }
+
+  /* ALERT BOXES */
+  .alert { border-radius: 7px; padding: 12px 16px; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.55; }
+  .alert i { font-size: 13px; margin-top: 1px; flex-shrink: 0; }
+  .alert.danger { background: #FDECEA; color: #7B1D1D; border: 1px solid #FCA5A5; }
+  .alert.warning { background: #FEF0D8; color: #78350F; border: 1px solid #FCD34D; }
+  .alert.success { background: #D4F0E3; color: #064E3B; border: 1px solid #6EE7B7; }
+  .alert.info { background: #EEE7F8; color: var(--ss-purple-deep); border: 1px solid #C4B5F4; }
+
+  /* INTEROP */
+  .export-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .export-card {
+    border: 1.5px solid var(--ss-border); border-radius: 9px; padding: 20px;
+    text-align: center; cursor: pointer; transition: all 0.15s;
+    background: white;
+  }
+  .export-card:hover { border-color: var(--ss-purple-deep); background: #F8F5FD; box-shadow: 0 2px 8px rgba(78,28,135,0.1); }
+  .export-icon { font-size: 24px; color: var(--ss-purple-deep); margin-bottom: 10px; }
+  .export-name { font-weight: 700; font-size: 13px; color: var(--ss-dark); }
+  .export-desc { font-size: 11px; color: var(--ss-mid); margin-top: 4px; line-height: 1.4; }
+
+  /* PERSONA BANNER */
+  .persona-banner {
+    border-radius: 8px; padding: 11px 16px; margin-bottom: 22px;
+    display: flex; align-items: center; gap: 11px; font-size: 13px;
+    line-height: 1.5;
+  }
+  .persona-banner i { font-size: 15px; flex-shrink: 0; }
+  .persona-banner.oem { background: #EEE7F8; border: 1px solid #C4B5F4; color: var(--ss-purple-deep); }
+  .persona-banner.supplier { background: #D4F0E3; border: 1px solid #6EE7B7; color: #065F46; }
+  .persona-banner.regulator { background: #FDECEA; border: 1px solid #FCA5A5; color: #7B1D1D; }
+  .persona-banner.sustainability { background: #FEF6D8; border: 1px solid #FCD34D; color: #78350F; }
+
+  /* AI CHAT */
+  .chat-fab {
+    position: fixed; bottom: 28px; right: 28px; width: 52px; height: 52px;
+    background: linear-gradient(135deg, var(--ss-purple-deep), var(--ss-magenta));
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 20px; color: white; cursor: pointer;
+    box-shadow: 0 4px 18px rgba(78,28,135,0.35); z-index: 200;
+    transition: transform 0.2s; border: none;
+  }
+  .chat-fab:hover { transform: scale(1.07); }
+  .chat-panel {
+    position: fixed; bottom: 90px; right: 28px; width: 375px; height: 510px;
+    background: white; border-radius: 14px;
+    box-shadow: 0 8px 36px rgba(0,0,0,0.16); display: none;
+    flex-direction: column; z-index: 200; overflow: hidden;
+    border: 1px solid var(--ss-border);
+  }
+  .chat-panel.open { display: flex; }
+  .chat-header {
+    background: linear-gradient(135deg, var(--ss-purple-deep), var(--ss-magenta));
+    padding: 15px 18px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .chat-header-left { display: flex; align-items: center; gap: 11px; }
+  .chat-avatar {
+    width: 34px; height: 34px; background: rgba(255,255,255,0.18); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 15px; color: white;
+  }
+  .chat-header-name { color: white; font-weight: 700; font-size: 14px; }
+  .chat-header-sub { color: rgba(255,255,255,0.72); font-size: 11px; margin-top: 1px; }
+  .chat-close { background: none; border: none; color: rgba(255,255,255,0.7); font-size: 16px; cursor: pointer; padding: 2px; }
+  .chat-close:hover { color: white; }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .msg { max-width: 86%; font-size: 13px; line-height: 1.55; padding: 10px 13px; border-radius: 10px; }
+  .msg.ai { background: var(--ss-gray); color: var(--ss-dark); align-self: flex-start; border-bottom-left-radius: 3px; }
+  .msg.ai strong { color: var(--ss-purple-deep); }
+  .msg.user { background: var(--ss-purple-deep); color: white; align-self: flex-end; border-bottom-right-radius: 3px; }
+  .chat-suggestions { padding: 6px 14px 2px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .chat-sug {
+    background: white; border: 1px solid var(--ss-border); border-radius: 14px;
+    padding: 5px 11px; font-size: 11px; cursor: pointer; color: var(--ss-dark); transition: all 0.15s;
+    font-weight: 500;
+  }
+  .chat-sug:hover { background: #EEE7F8; border-color: var(--ss-purple-deep); color: var(--ss-purple-deep); }
+  .chat-input-row { padding: 12px 14px; border-top: 1px solid var(--ss-border); display: flex; gap: 8px; align-items: center; }
+  .chat-input {
+    flex: 1; border: 1px solid var(--ss-border); border-radius: 18px; padding: 8px 14px;
+    font-size: 13px; outline: none; color: var(--ss-dark); background: var(--ss-gray);
+  }
+  .chat-input:focus { border-color: var(--ss-purple-deep); background: white; }
+  .chat-send {
+    background: var(--ss-purple-deep); border: none; border-radius: 50%;
+    width: 34px; height: 34px; color: white; cursor: pointer; font-size: 13px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .chat-send:hover { background: #3D1570; }
+
+  /* TOAST */
+  #toast {
+    position: fixed; bottom: 28px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--ss-dark); color: white; padding: 11px 22px;
+    border-radius: 7px; font-size: 13px; font-weight: 600; z-index: 300;
+    transition: transform 0.3s ease; pointer-events: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* ARCHITECTURE BOXES */
+  .arch-box { padding: 11px 14px; border-radius: 7px; margin-bottom: 8px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+  .arch-connector { text-align: center; color: var(--ss-mid); font-size: 18px; margin: -2px 0; line-height: 1; }
+
+  /* PRODUCT HEADER */
+  .product-header-card {
+    display: grid; grid-template-columns: 180px 1fr; gap: 20px;
+    background: white; border-radius: 10px; border: 1px solid var(--ss-border);
+    padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .ring-center { text-anchor: middle; }
+
+  /* SELECT */
+  .form-select {
+    font-size: 12px; border: 1px solid var(--ss-border); border-radius: 6px;
+    padding: 7px 10px; background: white; color: var(--ss-dark); outline: none;
+    cursor: pointer;
+  }
+  .form-select:focus { border-color: var(--ss-purple-deep); }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <div class="topnav-brand">
+    <div class="topnav-logo">
+      <!--
+        TO USE THE REAL LOGO:
+        1. Save sopra-steria-logo.png in the same folder as this HTML file
+        2. The <img> below will automatically show it (mix-blend-mode removes the black bg)
+        3. If the file is missing the browser shows nothing — just rename/move it alongside the HTML
+      -->
+      <img src="SOPRASTERIA_logo_RVB_blanc_exe.png" alt="Sopra Steria" class="ss-logo-img"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <!-- SVG fallback shown only when image file is not found -->
+      <div style="display:none;align-items:center;gap:7px">
+        <svg viewBox="0 0 56 48" width="40" height="34" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 31 C7 17 19 5 37 6 C47 6.5 53 14 51 23 C44 17 31 16 23 22 C15 27 7.5 33 7 31Z" fill="white"/>
+          <path d="M49 17 C49 31 37 43 19 42 C9 41.5 3 34 5 25 C12 31 25 32 33 26 C41 21 48.5 15 49 17Z" fill="white"/>
+        </svg>
+        <span style="color:white;font-size:15px;font-weight:300;letter-spacing:0.5px">sopra <strong style="font-weight:700">steria</strong></span>
+      </div>
+    </div>
+    <div class="topnav-divider"></div>
+    <div class="topnav-title">Digital Product Passport</div>
+  </div>
+
+  <div class="topnav-nav">
+    <!-- Portfolio — direct link -->
+    <button class="nav-btn active" id="nav-portfolio" onclick="showPage(&apos;portfolio&apos;)">Portfolio</button>
+
+    <!-- Compliance dropdown -->
+    <div class="nav-group">
+      <button class="nav-btn" id="nav-compliance">Compliance <span class="caret">▾</span></button>
+      <div class="nav-dropdown">
+        <div class="nav-dropdown-item" onclick="showPage('cockpit')">
+          <i class="fa-solid fa-bullseye"></i> Compliance Cockpit
+        </div>
+        <div class="nav-dropdown-item" onclick="showPage('radar')">
+          <i class="fa-solid fa-tower-broadcast"></i> Regulatory Radar
+        </div>
+      </div>
+    </div>
+
+    <!-- Automation dropdown -->
+    <div class="nav-group">
+      <button class="nav-btn" id="nav-automation">Automation <span class="caret">▾</span></button>
+      <div class="nav-dropdown">
+        <div class="nav-dropdown-item" onclick="showPage('agents')">
+          <i class="fa-solid fa-robot"></i> Agent Dashboard
+        </div>
+        <div class="nav-dropdown-item" onclick="showPage('merge')">
+          <i class="fa-solid fa-code-merge"></i> Merge DPPs
+        </div>
+      </div>
+    </div>
+
+    <!-- Exchange — direct link -->
+    <button class="nav-btn" id="nav-interop" onclick="showPage('interop')">Exchange</button>
+  </div>
+
+  <div class="topnav-right">
+    <button class="nav-icon-btn" onclick="showPage('guide')">
+      <i class="fa-solid fa-circle-question"></i> Guide
+    </button>
+    <button class="nav-icon-btn" onclick="startTour()">
+      <i class="fa-solid fa-play"></i> Start Tour
+    </button>
+    <div class="topnav-sep"></div>
+    <select class="persona-select" id="personaSelect" onchange="switchPersona(this.value)">
+      <option value="oem">Manufacturer</option>
+      <option value="supplier">Tier Supplier</option>
+      <option value="regulator">Market Surveillance</option>
+      <option value="sustainability">Sustainability Officer</option>
+    </select>
+    <div class="user-badge">CV</div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════
+     PAGE: PORTFOLIO
+═══════════════════════════════════════════ -->
+<div id="page-portfolio" class="page active">
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Overview</div>
+        <div class="sidebar-item active" onclick="showPage(&apos;portfolio&apos;)">
+          <span class="si-icon"><i class="fa-solid fa-clipboard-list"></i></span> DPP Portfolio
+        </div>
+        <div class="sidebar-item" onclick="showPage('cockpit')">
+          <span class="si-icon"><i class="fa-solid fa-bullseye"></i></span> Compliance Cockpit
+        </div>
+        <div class="sidebar-item" onclick="showPage('radar')">
+          <span class="si-icon"><i class="fa-solid fa-tower-broadcast"></i></span> Regulatory Radar
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Automation</div>
+        <div class="sidebar-item" onclick="showPage('agents')">
+          <span class="si-icon"><i class="fa-solid fa-robot"></i></span> Agent Dashboard
+        </div>
+        <div class="sidebar-item" onclick="openModal('modal-attr-engine')">
+          <span class="si-icon"><i class="fa-solid fa-gears"></i></span> Attribute Engine <span style="font-size:10px;background:#EEE7F8;color:var(--ss-purple-deep);padding:1px 5px;border-radius:3px;margin-left:4px">Soon</span>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Exchange</div>
+        <div class="sidebar-item" onclick="showPage('interop')">
+          <span class="si-icon"><i class="fa-solid fa-arrows-split-up-and-left"></i></span> Interoperability
+        </div>
+        <div class="sidebar-item" onclick="openModal('modal-export-center')">
+          <span class="si-icon"><i class="fa-solid fa-file-export"></i></span> Export Center <span style="font-size:10px;background:#EEE7F8;color:var(--ss-purple-deep);padding:1px 5px;border-radius:3px;margin-left:4px">Soon</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div id="persona-banner-portfolio" class="persona-banner oem">
+        <i class="fa-solid fa-industry"></i>
+        <span><strong>OEM View:</strong> Battery compliance status across your supplier portfolio. Priority target: EU Battery Passport deadline of 18 February 2027.</span>
+      </div>
+      <div class="page-header">
+        <h1>Battery DPP Portfolio</h1>
+        <p>EU Battery Regulation (EU 2023/1542) &nbsp;·&nbsp; ESPR (EU 2024/1781) &nbsp;·&nbsp; Last updated: 15 June 2026</p>
+      </div>
+
+      <div class="stat-grid" id="stat-grid-portfolio">
+        <div class="stat-card">
+          <div class="stat-icon red"><i class="fa-solid fa-battery-three-quarters"></i></div>
+          <div><div class="stat-value">11</div><div class="stat-label">Battery Products</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+          <div><div class="stat-value">8</div><div class="stat-label">Fully Compliant</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon gold"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <div><div class="stat-value">3</div><div class="stat-label">Gaps Detected</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple"><i class="fa-solid fa-calendar-days"></i></div>
+          <div><div class="stat-value">606</div><div class="stat-label">Days to Feb 2027</div></div>
+        </div>
+      </div>
+      <div class="alert info" id="persona-alert" style="margin-bottom:16px">
+        <i class="fa-solid fa-industry"></i>
+        <span><strong>Priority action:</strong> LCO-G has 3 blocking Supply Chain gaps. 2 products require Circularity data before Q4 2026 validation cycles. All other products are on track for February 2027.</span>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Battery Products</div>
+            <div class="card-subtitle">Select a product to view its full Digital Product Passport</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-outline btn-sm" onclick="downloadAll()"><i class="fa-solid fa-download"></i> Export All</button>
+            <button class="btn btn-outline btn-sm" onclick="showPage('merge')" style="border-color:var(--ss-magenta);color:var(--ss-magenta)"><i class="fa-solid fa-code-merge"></i> Merge DPPs</button>
+            <button class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Add Product</button>
+          </div>
+        </div>
+        <table class="data-table" id="portfolioTable">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Chemistry</th>
+              <th>GTIN / Serial</th>
+              <th>2027 Readiness</th>
+              <th>Status</th>
+              <th>Last Updated</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr onclick="showProductDetail('NMC811')">
+              <td><div class="product-name">NMC811</div><div class="product-sub">PHEV Battery</div></td>
+              <td>Li-NMC</td>
+              <td><span class="mono">SN-DEMO-001 &nbsp;·&nbsp; 04012345000000</span></td>
+              <td><div class="score-bar-wrap"><div class="score-bar-bg"><div class="score-bar-fill" style="width:91%;background:var(--compliant)"></div></div><span class="score-num" style="color:var(--compliant)">91%</span></div></td>
+              <td><span class="badge compliant"><i class="fa-solid fa-circle-check"></i> Compliant</span></td>
+              <td style="color:var(--ss-mid)">14 Aug 2025</td>
+            </tr>
+            <tr onclick="showProductDetail('NMC622')">
+              <td><div class="product-name">NMC622-G</div><div class="product-sub">PHEV Battery</div></td>
+              <td>Li-NMC</td>
+              <td><span class="mono">SN-DEMO-002 &nbsp;·&nbsp; 04012345000001</span></td>
+              <td><div class="score-bar-wrap"><div class="score-bar-bg"><div class="score-bar-fill" style="width:85%;background:var(--compliant)"></div></div><span class="score-num" style="color:var(--compliant)">85%</span></div></td>
+              <td><span class="badge compliant"><i class="fa-solid fa-circle-check"></i> Compliant</span></td>
+              <td style="color:var(--ss-mid)">14 Aug 2025</td>
+            </tr>
+            <tr onclick="showProductDetail('NMC955')">
+              <td><div class="product-name">NMC955-G</div><div class="product-sub">PHEV Battery</div></td>
+              <td>Li-NMC</td>
+              <td><span class="mono">SN-DEMO-003 &nbsp;·&nbsp; 04012345000002</span></td>
+              <td><div class="score-bar-wrap"><div class="score-bar-bg"><div class="score-bar-fill" style="width:78%;background:var(--partial)"></div></div><span class="score-num" style="color:var(--partial)">78%</span></div></td>
+              <td><span class="badge partial"><i class="fa-solid fa-circle-half-stroke"></i> Partial</span></td>
+              <td style="color:var(--ss-mid)">14 Aug 2025</td>
+            </tr>
+            <tr onclick="showProductDetail('LCO')">
+              <td><div class="product-name">LCO-G</div><div class="product-sub">PHEV Battery</div></td>
+              <td>Li-Co</td>
+              <td><span class="mono">SN-DEMO-004 &nbsp;·&nbsp; 04012345000003</span></td>
+              <td><div class="score-bar-wrap"><div class="score-bar-bg"><div class="score-bar-fill" style="width:62%;background:var(--missing)"></div></div><span class="score-num" style="color:var(--missing)">62%</span></div></td>
+              <td><span class="badge missing"><i class="fa-solid fa-circle-xmark"></i> Gaps Found</span></td>
+              <td style="color:var(--ss-mid)">14 Aug 2025</td>
+            </tr>
+            <tr>
+              <td><div class="product-name">LFP-G1</div><div class="product-sub">EV Battery</div></td>
+              <td>LiFePO4</td>
+              <td><span class="mono">SN-DEMO-005 &nbsp;·&nbsp; 04012345000004</span></td>
+              <td><div class="score-bar-wrap"><div class="score-bar-bg"><div class="score-bar-fill" style="width:95%;background:var(--compliant)"></div></div><span class="score-num" style="color:var(--compliant)">95%</span></div></td>
+              <td><span class="badge compliant"><i class="fa-solid fa-circle-check"></i> Compliant</span></td>
+              <td style="color:var(--ss-mid)">2 Jun 2026</td>
+            </tr>
+            <tr>
+              <td><div class="product-name">LFP-G2</div><div class="product-sub">EV Battery</div></td>
+              <td>LiFePO4</td>
+              <td><span class="mono">SN-DEMO-006 &nbsp;·&nbsp; 04012345000005</span></td>
+              <td><div class="score-bar-wrap"><div class="score-bar-bg"><div class="score-bar-fill" style="width:88%;background:var(--compliant)"></div></div><span class="score-num" style="color:var(--compliant)">88%</span></div></td>
+              <td><span class="badge compliant"><i class="fa-solid fa-circle-check"></i> Compliant</span></td>
+              <td style="color:var(--ss-mid)">20 May 2026</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE: PRODUCT DETAIL
+═══════════════════════════════════════════ -->
+<div id="page-product" class="page">
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Navigation</div>
+        <div class="sidebar-item" onclick="showPage(&apos;portfolio&apos;)">
+          <span class="si-icon"><i class="fa-solid fa-chevron-left"></i></span> Back to Portfolio
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Categories</div>
+        <div class="sidebar-item" onclick="scrollToCat(0)"><span class="si-icon"><i class="fa-solid fa-cloud"></i></span> Carbon Footprint</div>
+        <div class="sidebar-item" onclick="scrollToCat(1)"><span class="si-icon"><i class="fa-solid fa-flask"></i></span> Materials</div>
+        <div class="sidebar-item" onclick="scrollToCat(2)"><span class="si-icon"><i class="fa-solid fa-recycle"></i></span> Circularity</div>
+        <div class="sidebar-item" onclick="scrollToCat(3)"><span class="si-icon"><i class="fa-solid fa-tag"></i></span> Identifiers</div>
+        <div class="sidebar-item" onclick="scrollToCat(4)"><span class="si-icon"><i class="fa-solid fa-bolt"></i></span> Performance</div>
+        <div class="sidebar-item" onclick="scrollToCat(5)"><span class="si-icon"><i class="fa-solid fa-link"></i></span> Supply Chain</div>
+        <div class="sidebar-item" onclick="scrollToCat(6)"><span class="si-icon"><i class="fa-solid fa-file-shield"></i></span> Conformity</div>
+      </div>
+    </div>
+    <div class="content" id="product-content"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE: COMPLIANCE COCKPIT
+═══════════════════════════════════════════ -->
+<div id="page-cockpit" class="page">
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Overview</div>
+        <div class="sidebar-item" onclick="showPage(&apos;portfolio&apos;)"><span class="si-icon"><i class="fa-solid fa-clipboard-list"></i></span> DPP Portfolio</div>
+        <div class="sidebar-item active"><span class="si-icon"><i class="fa-solid fa-bullseye"></i></span> Compliance Cockpit</div>
+        <div class="sidebar-item" onclick="showPage('radar')"><span class="si-icon"><i class="fa-solid fa-tower-broadcast"></i></span> Regulatory Radar</div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="page-header">
+        <div class="breadcrumb">
+          <span class="bc-link" onclick="showPage(&apos;portfolio&apos;)">Portfolio</span>
+          <i class="fa-solid fa-chevron-right"></i> Compliance Cockpit
+        </div>
+        <h1>Compliance Cockpit</h1>
+        <p>Gap analysis &nbsp;·&nbsp; Readiness scoring &nbsp;·&nbsp; Forward regulatory requirements</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+        <div class="card" style="margin-bottom:0">
+          <div class="card-header" style="margin-bottom:16px"><div class="card-title">Fleet Readiness — February 2027</div></div>
+          <div class="ring-wrap">
+            <svg width="130" height="130" viewBox="0 0 130 130" style="flex-shrink:0">
+              <circle cx="65" cy="65" r="50" fill="none" stroke="#EBEBF0" stroke-width="13"/>
+              <circle cx="65" cy="65" r="50" fill="none" stroke="var(--compliant)" stroke-width="13"
+                stroke-dasharray="314.16" stroke-dashoffset="50.3" stroke-linecap="round"
+                transform="rotate(-90 65 65)"/>
+              <text x="65" y="59" text-anchor="middle" font-size="22" font-weight="800" fill="var(--ss-dark)">84%</text>
+              <text x="65" y="75" text-anchor="middle" font-size="10" fill="var(--ss-mid)">Fleet Ready</text>
+            </svg>
+            <div>
+              <div class="ring-legend-item"><div class="ring-dot" style="background:var(--compliant)"></div>Fully Compliant — 8 products</div>
+              <div class="ring-legend-item"><div class="ring-dot" style="background:var(--partial)"></div>Partial coverage — 2 products</div>
+              <div class="ring-legend-item"><div class="ring-dot" style="background:var(--missing)"></div>Blocking gaps — 1 product</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:0">
+          <div class="card-header" style="margin-bottom:14px">
+            <div class="card-title">AI Priority Actions</div>
+            <span class="exec-ai-badge" style="font-size:10px"><i class="fa-solid fa-robot"></i> AI ANALYSIS</span>
+          </div>
+          <div class="alert danger"><i class="fa-solid fa-circle-xmark"></i><span><strong>LCO-G:</strong> 3 Supply Chain Due Diligence declarations missing. Blocking Feb 2027 compliance. Initiate supplier data requests immediately.</span></div>
+          <div class="alert warning"><i class="fa-solid fa-triangle-exclamation"></i><span><strong>NMC955-G:</strong> Recycled content threshold declaration incomplete. Required under Art. 8 for market placement.</span></div>
+          <div class="alert success"><i class="fa-solid fa-circle-check"></i><span><strong>NMC811, LFP-G1:</strong> All mandatory attributes covered. No action required before February 2027.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Attribute Gap Register — NMC955-G</div>
+            <div class="card-subtitle">EU Battery Regulation (EU 2023/1542)</div>
+          </div>
+          <span class="badge partial"><i class="fa-solid fa-circle-half-stroke"></i> 78% Ready</span>
+        </div>
+        <table class="gap-table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Attribute</th>
+              <th>Status</th>
+              <th>Regulatory Basis</th>
+              <th>Deadline</th>
+              <th>Priority</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Carbon Footprint</td><td>Absolute Battery Carbon Footprint</td><td><span class="badge compliant"><i class="fa-solid fa-circle-check"></i> Covered</span></td><td>Art. 7, Annex II</td><td>Feb 2027</td><td><span class="priority-tag low">Low</span></td></tr>
+            <tr><td>Carbon Footprint</td><td>Carbon Footprint Performance Class</td><td><span class="badge compliant"><i class="fa-solid fa-circle-check"></i> Covered</span></td><td>Art. 7(1)(b)</td><td>Feb 2027</td><td><span class="priority-tag low">Low</span></td></tr>
+            <tr><td>Circularity</td><td>Recycled Content — Cobalt</td><td><span class="badge partial"><i class="fa-solid fa-circle-half-stroke"></i> Partial</span></td><td>Art. 8, Annex X</td><td>Feb 2027</td><td><span class="priority-tag high">High</span></td></tr>
+            <tr><td>Circularity</td><td>Recycled Content — Nickel</td><td><span class="badge missing"><i class="fa-solid fa-circle-xmark"></i> Missing</span></td><td>Art. 8, Annex X</td><td>Feb 2027</td><td><span class="priority-tag high">High</span></td></tr>
+            <tr><td>Supply Chain</td><td>Responsible Sourcing — Lithium</td><td><span class="badge compliant"><i class="fa-solid fa-circle-check"></i> Covered</span></td><td>Art. 48</td><td>Feb 2027</td><td><span class="priority-tag low">Low</span></td></tr>
+            <tr><td>Performance</td><td>Rated Capacity (Ah)</td><td><span class="badge compliant"><i class="fa-solid fa-circle-check"></i> Covered</span></td><td>Art. 10, Annex IV</td><td>Feb 2027</td><td><span class="priority-tag low">Low</span></td></tr>
+            <tr><td>Performance</td><td>State of Health Disclosure</td><td><span class="badge future"><i class="fa-solid fa-clock"></i> Future req.</span></td><td>Art. 14 — delegated act</td><td>2026–2027</td><td><span class="priority-tag medium">Medium</span></td></tr>
+            <tr><td>Circularity</td><td>Recycled Content Threshold Declaration</td><td><span class="badge future"><i class="fa-solid fa-clock"></i> Future req.</span></td><td>Art. 8(4) — 2028</td><td>2028</td><td><span class="priority-tag medium">Medium</span></td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:18px;display:flex;gap:10px">
+          <button class="btn btn-primary" onclick="downloadAuditDoc()"><i class="fa-solid fa-file-lines"></i> Generate Audit Package</button>
+          <button class="btn btn-outline" onclick="downloadGapRegister()"><i class="fa-solid fa-file-export"></i> Export Gap Register</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE: REGULATORY RADAR
+═══════════════════════════════════════════ -->
+<div id="page-radar" class="page">
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Overview</div>
+        <div class="sidebar-item" onclick="showPage(&apos;portfolio&apos;)"><span class="si-icon"><i class="fa-solid fa-clipboard-list"></i></span> DPP Portfolio</div>
+        <div class="sidebar-item" onclick="showPage('cockpit')"><span class="si-icon"><i class="fa-solid fa-bullseye"></i></span> Compliance Cockpit</div>
+        <div class="sidebar-item active"><span class="si-icon"><i class="fa-solid fa-tower-broadcast"></i></span> Regulatory Radar</div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="page-header">
+        <div class="breadcrumb"><span class="bc-link" onclick="showPage(&apos;portfolio&apos;)">Portfolio</span><i class="fa-solid fa-chevron-right"></i> Regulatory Radar</div>
+        <h1>Regulatory Radar</h1>
+        <p>Upcoming EU mandates mapped to your current attribute coverage</p>
+      </div>
+
+      <div class="exec-summary">
+        <span class="exec-ai-badge"><i class="fa-solid fa-robot"></i> AI SUMMARY</span>
+        <div class="exec-text">Your fleet is well-positioned for the <strong>February 2027 Battery Passport deadline</strong> at 84% fleet readiness. The critical window is the next 6 months: 2 products require Supply Chain and Circularity data before Q4 2026 to allow validation cycles. The <strong>2028 recycled content threshold</strong> (Art. 8.4) will require new declarations — your Circularity category already captures these values, significantly reducing future implementation effort.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">EU Battery Regulation — Compliance Timeline</div></div>
+        <div class="timeline">
+          <div class="timeline-track"></div>
+          <div class="timeline-item">
+            <div class="timeline-dot done"></div>
+            <div class="timeline-content">
+              <div class="timeline-date"><i class="fa-solid fa-circle-check" style="color:var(--compliant)"></i> August 2023 — Completed</div>
+              <div class="timeline-title">EU Battery Regulation (2023/1542) enters into force</div>
+              <div class="timeline-body">Framework established. Carbon footprint and supply chain due diligence categories defined. <strong>Your DPP data structure fully aligns with this framework.</strong></div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot done"></div>
+            <div class="timeline-content">
+              <div class="timeline-date"><i class="fa-solid fa-circle-check" style="color:var(--compliant)"></i> February 2024 — Completed</div>
+              <div class="timeline-title">Carbon footprint declaration — Industrial batteries ≥2 kWh</div>
+              <div class="timeline-body">Carbon footprint per kWh mandatory. Battery Carbon Footprint Performance Class required. <strong>Status: All 11 products covered.</strong></div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot now"></div>
+            <div class="timeline-content">
+              <div class="timeline-date"><i class="fa-solid fa-circle-dot" style="color:var(--ss-gold)"></i> June 2026 — Active Window</div>
+              <div class="timeline-title">Data preparation window — 8 months to deadline</div>
+              <div class="timeline-body">Close Supply Chain gaps on LCO-G. Complete Circularity declarations on NMC955-G. Finalise QR code linkage. Validate all 113 attributes across the portfolio.</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot upcoming"></div>
+            <div class="timeline-content">
+              <div class="timeline-date"><i class="fa-solid fa-calendar-days" style="color:var(--ss-mid)"></i> 18 February 2027 — Mandatory Deadline</div>
+              <div class="timeline-title">Battery Passport mandatory — EV, industrial and LMT batteries</div>
+              <div class="timeline-body">Full DPP required at product placement. Unique identifier (QR/NFC). All 7 category groups populated. Accessible to regulators, operators, and end users. <strong>Current gaps: LCO-G Supply Chain (3 attributes), NMC955-G Circularity (2 attributes).</strong></div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot upcoming"></div>
+            <div class="timeline-content">
+              <div class="timeline-date"><i class="fa-solid fa-calendar-days" style="color:var(--ss-mid)"></i> 2028 — Upcoming</div>
+              <div class="timeline-title">Recycled content minimum thresholds — Art. 8.4</div>
+              <div class="timeline-body">Cobalt ≥12%, Lithium ≥4%, Nickel ≥4% minimum recycled content mandatory. <strong>Your Circularity category already tracks these values — implementation reduces to adding threshold validation rules.</strong></div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot upcoming"></div>
+            <div class="timeline-content">
+              <div class="timeline-date"><i class="fa-solid fa-calendar-days" style="color:var(--ss-mid)"></i> 2030 — Upcoming</div>
+              <div class="timeline-title">Extended recycled content thresholds — Art. 8.6</div>
+              <div class="timeline-body">Higher thresholds: Cobalt ≥20%, Lithium ≥10%, Nickel ≥12%. The Regulatory Monitor agent will detect the final delegated act publication and propose attribute updates automatically.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">ESPR — Additional Product Categories</div><div class="card-subtitle">Upcoming delegated acts beyond batteries</div></div>
+          <span class="badge future"><i class="fa-solid fa-clock"></i> Upcoming</span>
+        </div>
+        <table class="gap-table">
+          <thead><tr><th>Product Category</th><th>Delegated Act Expected</th><th>Impact on Data Hub</th><th>Your Readiness</th></tr></thead>
+          <tbody>
+            <tr><td>Iron &amp; Steel</td><td>2026</td><td>New DPP product type — new attribute set required</td><td><span class="badge future"><i class="fa-solid fa-clock"></i> Prepare</span></td></tr>
+            <tr><td>Textiles &amp; Apparel</td><td>2027</td><td>New categories: fibre composition, durability indicators</td><td><span class="badge future"><i class="fa-solid fa-clock"></i> Monitor</span></td></tr>
+            <tr><td>Tyres</td><td>2027</td><td>Rolling resistance, wet grip, recycled content</td><td><span class="badge future"><i class="fa-solid fa-clock"></i> Monitor</span></td></tr>
+            <tr><td>Furniture</td><td>2028</td><td>Wood sourcing declaration, recyclability score</td><td><span class="badge future"><i class="fa-solid fa-clock"></i> Monitor</span></td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:16px">
+          <button class="btn btn-primary" onclick="showPage('agents')"><i class="fa-solid fa-robot"></i> Assign Regulatory Monitor Agent</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE: AGENT DASHBOARD
+═══════════════════════════════════════════ -->
+<div id="page-agents" class="page">
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Automation</div>
+        <div class="sidebar-item active"><span class="si-icon"><i class="fa-solid fa-robot"></i></span> Agent Dashboard</div>
+        <div class="sidebar-item" onclick="openModal('modal-attr-engine')"><span class="si-icon"><i class="fa-solid fa-gears"></i></span> Attribute Engine <span style="font-size:10px;background:#EEE7F8;color:var(--ss-purple-deep);padding:1px 5px;border-radius:3px;margin-left:4px">Soon</span></div>
+        <div class="sidebar-item" onclick="openModal('modal-audit-log')"><span class="si-icon"><i class="fa-solid fa-scroll"></i></span> Audit Log <span style="font-size:10px;background:#EEE7F8;color:var(--ss-purple-deep);padding:1px 5px;border-radius:3px;margin-left:4px">Soon</span></div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="page-header">
+        <div class="breadcrumb"><span class="bc-link" onclick="showPage(&apos;portfolio&apos;)">Portfolio</span><i class="fa-solid fa-chevron-right"></i> Agent Dashboard</div>
+        <h1>Agent Dashboard</h1>
+        <p>Autonomous agents operating on top of the Data Hub — propose, never auto-publish</p>
+      </div>
+
+      <div class="alert info" style="margin-bottom:20px">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span><strong>Governance principle:</strong> All agents operate with human-in-the-loop. Agents detect, analyse, and propose — no agent auto-publishes data or sends external communications without explicit approval.</span>
+      </div>
+
+      <div class="agent-grid">
+
+        <div class="agent-card">
+          <div class="agent-header">
+            <div class="agent-icon purple"><i class="fa-solid fa-tower-broadcast"></i></div>
+            <div style="flex:1">
+              <div class="agent-name">Regulatory Monitor</div>
+              <div class="agent-role">Watches EU Official Journal and ESPR delegated act pipeline for changes</div>
+            </div>
+          </div>
+          <div class="agent-status-row">
+            <div class="agent-status"><div class="status-dot running"></div> Running</div>
+            <div class="agent-meta">Last run: Today 06:00 &nbsp;·&nbsp; Next: Tomorrow 06:00</div>
+          </div>
+          <div class="agent-log" id="agent1-log">
+[06:00] Initialising regulatory scan
+[06:01] Fetching EUR-Lex — Battery Regulation updates
+[06:02] Fetching ESPR delegated act pipeline
+[06:03] Comparing against 113 existing attributes
+[06:04] <span class="log-warn">[DELTA]</span> Draft delegated act detected — Steel DPP
+[06:05] Proposing 14 new attributes for review
+[06:05] <span class="log-ok">[DONE]</span> Report generated — pending human approval</div>
+          <div class="agent-actions">
+            <button class="btn btn-success btn-sm" onclick="agentApprove(1)"><i class="fa-solid fa-check"></i> Review Proposals (14)</button>
+            <button class="btn btn-outline btn-sm" onclick="runAgent(1)"><i class="fa-solid fa-play"></i> Run Now</button>
+          </div>
+        </div>
+
+        <div class="agent-card">
+          <div class="agent-header">
+            <div class="agent-icon blue"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+            <div style="flex:1">
+              <div class="agent-name">Data Completeness Enforcer</div>
+              <div class="agent-role">Detects missing attributes and tracks supplier response timelines</div>
+            </div>
+          </div>
+          <div class="agent-status-row">
+            <div class="agent-status"><div class="status-dot waiting"></div> Awaiting Response</div>
+            <div class="agent-meta">2 open requests &nbsp;·&nbsp; 1 overdue</div>
+          </div>
+          <div class="agent-log" id="agent2-log">
+[01 Jun] LCO-G: 3 missing Supply Chain attributes detected
+[01 Jun] Supplier data request drafted — pending approval
+[03 Jun] Request sent to Supplier A (cobalt sourcing)
+[03 Jun] Request sent to Supplier B (lithium origin)
+[15 Jun] <span class="log-warn">[OVERDUE]</span> Supplier A — 12 days without response
+[15 Jun] Escalation notification drafted — pending approval</div>
+          <div class="agent-actions">
+            <button class="btn btn-success btn-sm" onclick="agentApprove(2)"><i class="fa-solid fa-check"></i> Approve Escalation</button>
+            <button class="btn btn-outline btn-sm" onclick="runAgent(2)"><i class="fa-solid fa-play"></i> Scan Now</button>
+          </div>
+        </div>
+
+        <div class="agent-card">
+          <div class="agent-header">
+            <div class="agent-icon orange"><i class="fa-solid fa-layer-group"></i></div>
+            <div style="flex:1">
+              <div class="agent-name">Attribute Lifecycle Manager</div>
+              <div class="agent-role">Reads regulatory text and proposes new attribute definitions for review</div>
+            </div>
+          </div>
+          <div class="agent-status-row">
+            <div class="agent-status"><div class="status-dot idle"></div> Idle</div>
+            <div class="agent-meta">Last run: 10 Jun &nbsp;·&nbsp; 23 attributes approved</div>
+          </div>
+          <div class="agent-log" id="agent3-log">
+[10 Jun] Input: ESPR delegated act — Textiles (draft PDF)
+[10 Jun] Extracting data requirements from 48-page document
+[10 Jun] Mapping to existing attribute catalog (113 attrs)
+[10 Jun] Found: 6 matching, 4 partial, 23 new
+[10 Jun] Drafted 23 new attribute definitions with references
+[12 Jun] <span class="log-ok">[APPROVED]</span> 23 attributes published by admin</div>
+          <div class="agent-actions">
+            <div style="font-size:12px;color:var(--ss-mid)">Upload regulatory text to trigger analysis</div>
+            <button class="btn btn-primary btn-sm" onclick="runAgent(3)"><i class="fa-solid fa-file-arrow-up"></i> Upload &amp; Analyse</button>
+          </div>
+        </div>
+
+        <div class="agent-card">
+          <div class="agent-header">
+            <div class="agent-icon green"><i class="fa-solid fa-file-circle-check"></i></div>
+            <div style="flex:1">
+              <div class="agent-name">Audit Preparation Agent</div>
+              <div class="agent-role">Assembles regulation-cited audit packages on demand</div>
+            </div>
+          </div>
+          <div class="agent-status-row">
+            <div class="agent-status"><div class="status-dot idle"></div> Ready</div>
+            <div class="agent-meta">Last package: 8 Jun — NMC811, 12 pages</div>
+          </div>
+          <div class="agent-log" id="agent4-log">
+[08 Jun] Scope: NMC811 · Regulation: EU 2023/1542
+[08 Jun] Fetching all 113 attribute values from Data Hub
+[08 Jun] Cross-checking against regulatory requirements
+[08 Jun] 6/7 categories: fully compliant
+[08 Jun] 1 advisory gap identified (future req. 2028)
+[08 Jun] <span class="log-ok">[DONE]</span> Audit package: 12 pages, PDF
+[08 Jun] Timestamp and data snapshot logged for traceability</div>
+          <div class="agent-actions">
+            <select class="form-select" id="auditProduct">
+              <option>NMC811</option><option>NMC622-G</option>
+              <option>NMC955-G</option><option>LCO-G</option>
+            </select>
+            <button class="btn btn-primary btn-sm" onclick="runAgent(4)"><i class="fa-solid fa-file-lines"></i> Generate Package</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE: INTEROPERABILITY
+═══════════════════════════════════════════ -->
+<div id="page-interop" class="page">
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Exchange</div>
+        <div class="sidebar-item active"><span class="si-icon"><i class="fa-solid fa-arrows-split-up-and-left"></i></span> Interoperability</div>
+        <div class="sidebar-item" onclick="openModal('modal-export-center')"><span class="si-icon"><i class="fa-solid fa-file-export"></i></span> Export Center <span style="font-size:10px;background:#EEE7F8;color:var(--ss-purple-deep);padding:1px 5px;border-radius:3px;margin-left:4px">Soon</span></div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="page-header">
+        <div class="breadcrumb"><span class="bc-link" onclick="showPage(&apos;portfolio&apos;)">Portfolio</span><i class="fa-solid fa-chevron-right"></i> Interoperability</div>
+        <h1>Interoperability &amp; Export</h1>
+        <p>Data Hub as system of record &nbsp;·&nbsp; Eclipse BaSyx AAS as system of exchange</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+        <div class="card" style="margin-bottom:0">
+          <div class="card-header" style="margin-bottom:16px"><div class="card-title">Architecture</div></div>
+          <div class="arch-box" style="background:#EEE7F8;border:1px solid #C4B5F4;color:var(--ss-purple-deep)">
+            <i class="fa-solid fa-database"></i> Data Hub <span style="font-weight:400;font-size:12px;margin-left:4px;color:var(--ss-mid)">— System of Record</span>
+          </div>
+          <div class="arch-connector"><i class="fa-solid fa-arrows-up-down"></i></div>
+          <div class="arch-box" style="background:#DBEAFE;border:1px solid #93C5FD;color:#1D4ED8">
+            <i class="fa-solid fa-code-branch"></i> DPP API Gateway <span style="font-weight:400;font-size:12px;margin-left:4px;color:var(--ss-mid)">— Transformation layer</span>
+          </div>
+          <div class="arch-connector"><i class="fa-solid fa-arrows-up-down"></i></div>
+          <div class="arch-box" style="background:#D4F0E3;border:1px solid #6EE7B7;color:var(--compliant)">
+            <i class="fa-solid fa-globe"></i> BaSyx AAS Registry <span style="font-weight:400;font-size:12px;margin-left:4px;color:var(--ss-mid)">— System of Exchange</span>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:0">
+          <div class="card-header" style="margin-bottom:16px"><div class="card-title">BaSyx Registry Status</div></div>
+          <table style="width:100%;font-size:13px">
+            <tr><td style="padding:9px 0;border-bottom:1px solid var(--ss-border);color:var(--ss-mid)">Registry endpoint</td><td style="padding:9px 0;border-bottom:1px solid var(--ss-border);font-weight:700;color:var(--compliant);text-align:right"><i class="fa-solid fa-circle" style="font-size:9px"></i> Connected</td></tr>
+            <tr><td style="padding:9px 0;border-bottom:1px solid var(--ss-border);color:var(--ss-mid)">Registered submodels</td><td style="padding:9px 0;border-bottom:1px solid var(--ss-border);font-weight:700;text-align:right">11</td></tr>
+            <tr><td style="padding:9px 0;border-bottom:1px solid var(--ss-border);color:var(--ss-mid)">Last synchronisation</td><td style="padding:9px 0;border-bottom:1px solid var(--ss-border);font-weight:700;text-align:right">15 Jun 2026, 12:00</td></tr>
+            <tr><td style="padding:9px 0;color:var(--ss-mid)">Standard</td><td style="padding:9px 0;font-weight:700;text-align:right">IEC 63278 / IDTA 02003</td></tr>
+          </table>
+          <button class="btn btn-primary" style="width:100%;margin-top:14px;justify-content:center"><i class="fa-solid fa-arrows-rotate"></i> Synchronise All Products</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Export Formats</div><div class="card-subtitle">Select a product, then choose the target format</div></div>
+          <select class="form-select">
+            <option>NMC811 — SN-DEMO-001</option>
+            <option>NMC622-G — SN-DEMO-002</option>
+            <option>NMC955-G — SN-DEMO-003</option>
+            <option>LCO-G — SN-DEMO-004</option>
+          </select>
+        </div>
+        <div class="export-grid">
+          <div class="export-card" onclick="showExportToast('AAS Submodel JSON')">
+            <div class="export-icon"><i class="fa-solid fa-cube"></i></div>
+            <div class="export-name">AAS Submodel (JSON)</div>
+            <div class="export-desc">Eclipse BaSyx compatible · IDTA 02003-1-1</div>
+          </div>
+          <div class="export-card" onclick="showExportToast('AASX Package')">
+            <div class="export-icon"><i class="fa-solid fa-box-archive"></i></div>
+            <div class="export-name">AASX Package</div>
+            <div class="export-desc">Complete Asset Administration Shell package</div>
+          </div>
+          <div class="export-card" onclick="showExportToast('JSON-LD')">
+            <div class="export-icon"><i class="fa-solid fa-globe"></i></div>
+            <div class="export-name">JSON-LD</div>
+            <div class="export-desc">Linked Data format · Schema.org aligned</div>
+          </div>
+          <div class="export-card" onclick="showExportToast('REST API Endpoint')">
+            <div class="export-icon"><i class="fa-solid fa-plug"></i></div>
+            <div class="export-name">REST API</div>
+            <div class="export-desc">Live endpoint · OAuth 2.0 secured</div>
+          </div>
+          <div class="export-card" onclick="showExportToast('QR Code Package')">
+            <div class="export-icon"><i class="fa-solid fa-qrcode"></i></div>
+            <div class="export-name">QR Code</div>
+            <div class="export-desc">Consumer-facing DPP access link · IEC 15459</div>
+          </div>
+          <div class="export-card" onclick="showExportToast('Audit PDF Package')">
+            <div class="export-icon"><i class="fa-solid fa-file-pdf"></i></div>
+            <div class="export-name">Audit PDF</div>
+            <div class="export-desc">Regulator-ready compliance documentation</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE: MERGE DPPs
+═══════════════════════════════════════════ -->
+<div id="page-merge" class="page">
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Overview</div>
+        <div class="sidebar-item" onclick="showPage(&apos;portfolio&apos;)"><span class="si-icon"><i class="fa-solid fa-chevron-left"></i></span> Back to Portfolio</div>
+        <div class="sidebar-item active"><span class="si-icon"><i class="fa-solid fa-code-merge"></i></span> Merge DPPs</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">What is merging?</div>
+        <div style="padding:0 6px;font-size:12px;color:var(--ss-mid);line-height:1.6">
+          When two battery products are combined into a single system, a new merged DPP is required. The merged passport inherits data from both source products with attributes consolidated by regulation-defined rules.
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="page-header">
+        <div class="breadcrumb"><span class="bc-link" onclick="showPage(&apos;portfolio&apos;)">Portfolio</span><i class="fa-solid fa-chevron-right"></i> Merge DPPs</div>
+        <h1>Merge Digital Product Passports</h1>
+        <p>Combine two battery DPPs into a single compliant passport for a merged battery system</p>
+      </div>
+
+      <div class="alert info" style="margin-bottom:20px">
+        <i class="fa-solid fa-circle-info"></i>
+        <span><strong>When is a merge required?</strong> Under EU 2023/1542, when two battery products are assembled into a single battery system (e.g. dual-pack configuration, remanufactured assembly, or module consolidation), the resulting system requires its own Battery Passport with a new unique identifier and consolidated attribute values from both source products.</span>
+      </div>
+
+      <!-- STEP 1 -->
+      <div class="merge-step">
+        <div class="merge-step-header">
+          <div class="step-num">1</div>
+          <div><div class="step-title">Select Products to Merge</div><div class="step-sub">Add two or more battery products — no upper limit</div></div>
+        </div>
+
+        <div id="mergeProductList" style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px"></div>
+
+        <button class="btn btn-outline btn-sm" id="addMergeBtn" onclick="addMergeRow()" style="align-self:flex-start">
+          <i class="fa-solid fa-plus"></i> Add another product
+        </button>
+
+        <div style="margin-top:18px">
+          <div style="font-size:11px;font-weight:700;color:var(--ss-mid);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px">Merge Scenario</div>
+          <select class="form-select" id="mergeType" style="width:100%;padding:10px 12px;font-size:13px">
+            <option value="combined">Combined Battery System — Multiple packs installed as one system in a vehicle or application</option>
+            <option value="remanufactured">Remanufactured Battery — New pack assembled from certified cells of source batteries</option>
+            <option value="module">Module Integration — Modules from multiple batteries combined into a new housing</option>
+          </select>
+        </div>
+        <div style="margin-top:18px">
+          <button class="btn btn-primary" onclick="runMergeComparison()"><i class="fa-solid fa-table-columns"></i> Compare Attributes</button>
+        </div>
+      </div>
+
+      <!-- STEP 2 — hidden initially -->
+      <div class="merge-step" id="mergeStep2" style="display:none">
+        <div class="merge-step-header">
+          <div class="step-num">2</div>
+          <div><div class="step-title">Attribute Comparison</div><div class="step-sub" id="mergeStep2Sub">Review how attributes from both products are consolidated</div></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:14px;font-size:12px">
+          <span class="merge-badge match"><i class="fa-solid fa-equals"></i> Match — identical values</span>
+          <span class="merge-badge resolved"><i class="fa-solid fa-calculator"></i> Resolved — method applied automatically</span>
+          <span class="merge-badge conflict"><i class="fa-solid fa-triangle-exclamation"></i> Conflict — requires manual review</span>
+        </div>
+        <table class="merge-table" id="mergeCompareTable">
+          <thead><tr><th>Attribute</th><th id="colA">Product A</th><th id="colB">Product B</th><th>Merged Value</th><th>Resolution</th></tr></thead>
+          <tbody id="mergeTableBody"></tbody>
+        </table>
+        <div style="margin-top:16px">
+          <button class="btn btn-primary" onclick="showMergePreview()"><i class="fa-solid fa-eye"></i> Preview Merged DPP</button>
+        </div>
+      </div>
+
+      <!-- STEP 3 — hidden initially -->
+      <div class="merge-step" id="mergeStep3" style="display:none">
+        <div class="merge-step-header">
+          <div class="step-num">3</div>
+          <div><div class="step-title">Merged DPP Preview</div><div class="step-sub">Review the new passport before creating it in the Data Hub</div></div>
+        </div>
+        <div class="merge-preview">
+          <div style="font-size:13px;font-weight:600;color:var(--ss-purple-deep);margin-bottom:14px"><i class="fa-solid fa-file-circle-check"></i> &nbsp;New Battery Passport — Ready to Create</div>
+          <div class="preview-grid" id="mergePreviewGrid"></div>
+          <div style="margin-top:4px;padding:12px;background:white;border-radius:7px;border:1px solid var(--ss-border)">
+            <div style="font-size:11px;font-weight:700;color:var(--ss-mid);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:5px">AI Compliance Note</div>
+            <div style="font-size:13px;color:var(--ss-dark);line-height:1.6" id="mergeAINote"></div>
+          </div>
+        </div>
+        <div style="margin-top:18px;display:flex;gap:10px">
+          <button class="btn btn-primary" onclick="confirmMerge()"><i class="fa-solid fa-plus"></i> Create Merged DPP in Portfolio</button>
+          <button class="btn btn-outline" onclick="downloadMergeJSON()"><i class="fa-solid fa-download"></i> Download as JSON</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE: GUIDE
+═══════════════════════════════════════════ -->
+<div id="page-guide" class="page">
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Guide sections</div>
+        <div class="sidebar-item" onclick="scrollToSection('guide-what')"><span class="si-icon"><i class="fa-solid fa-circle-question"></i></span> What is a DPP?</div>
+        <div class="sidebar-item" onclick="scrollToSection('guide-deliverable')"><span class="si-icon"><i class="fa-solid fa-box-open"></i></span> Final Deliverable</div>
+        <div class="sidebar-item" onclick="scrollToSection('guide-qr')"><span class="si-icon"><i class="fa-solid fa-qrcode"></i></span> The QR Code</div>
+        <div class="sidebar-item" onclick="scrollToSection('guide-assess')"><span class="si-icon"><i class="fa-solid fa-clipboard-check"></i></span> Readiness Assessment</div>
+        <div class="sidebar-item" onclick="scrollToSection('guide-platform')"><span class="si-icon"><i class="fa-solid fa-desktop"></i></span> Platform Guide</div>
+      </div>
+    </div>
+    <div class="content" id="guide-scroll-root">
+
+      <div class="page-header">
+        <h1>Platform Guide &amp; DPP Explained</h1>
+        <p>Everything you need to understand Digital Product Passports, what the final product looks like, and how to use this platform</p>
+      </div>
+
+      <!-- SECTION 1: WHAT IS A DPP -->
+      <div id="guide-what" class="guide-section">
+        <div class="guide-section-title"><i class="fa-solid fa-circle-question"></i> What is a Digital Product Passport?</div>
+        <div class="card" style="margin-bottom:14px">
+          <p style="font-size:14px;line-height:1.8;color:var(--ss-dark)">
+            A <strong>Digital Product Passport (DPP)</strong> is not a document. It is a <strong>structured digital data record</strong> permanently linked to a physical product throughout its entire lifecycle — from manufacturing through use, repair, and end-of-life recycling.<br><br>
+            It was introduced by the <strong>EU Ecodesign for Sustainable Products Regulation (ESPR — EU 2024/1781)</strong> as the EU's primary tool for making products traceable, transparent, and circular. The first legally binding DPP is the <strong>Battery Passport</strong>, mandated by <strong>EU Battery Regulation 2023/1542</strong>, mandatory from <strong>18 February 2027</strong>.<br><br>
+            Think of it this way: every product that enters the EU market must carry a digital identity that anyone — a recycler, a regulator, a consumer — can access by scanning a QR code. That identity contains verified data about what the product is made of, how it was produced, how to maintain it, and how to dispose of it responsibly.
+          </p>
+        </div>
+        <div class="guide-section-title" style="font-size:14px;border-bottom:none;padding-bottom:0;margin-bottom:10px"><i class="fa-solid fa-cubes"></i> The 5 components of a complete DPP</div>
+        <div class="component-grid">
+          <div class="component-card highlight">
+            <div class="component-num">1</div>
+            <div class="component-icon"><i class="fa-solid fa-database"></i></div>
+            <div class="component-name">Data Record</div>
+            <div class="component-desc">All mandatory attributes populated and validated — materials, carbon footprint, supply chain, performance, conformity</div>
+          </div>
+          <div class="component-card highlight">
+            <div class="component-num">2</div>
+            <div class="component-icon"><i class="fa-solid fa-qrcode"></i></div>
+            <div class="component-name">Unique Identifier</div>
+            <div class="component-desc">A QR code or NFC tag physically on the product linking to the data record. Mandatory under Art. 77</div>
+          </div>
+          <div class="component-card highlight">
+            <div class="component-num">3</div>
+            <div class="component-icon"><i class="fa-solid fa-globe"></i></div>
+            <div class="component-name">Access Endpoint</div>
+            <div class="component-desc">A URL or API where the DPP data is readable. Must be publicly accessible — no login required for basic information</div>
+          </div>
+          <div class="component-card highlight">
+            <div class="component-num">4</div>
+            <div class="component-icon"><i class="fa-solid fa-building-columns"></i></div>
+            <div class="component-name">EU Registry</div>
+            <div class="component-desc">From Feb 2027, every Battery Passport must be registered in the EU central registry. The registry stores the link, not the data</div>
+          </div>
+          <div class="component-card highlight">
+            <div class="component-num">5</div>
+            <div class="component-icon"><i class="fa-solid fa-arrows-rotate"></i></div>
+            <div class="component-name">Maintenance Process</div>
+            <div class="component-desc">The DPP must be updated throughout the product lifecycle — when ownership changes, state of health changes, or repairs occur</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: FINAL DELIVERABLE -->
+      <div id="guide-deliverable" class="guide-section">
+        <div class="guide-section-title"><i class="fa-solid fa-box-open"></i> What is the final product that stakeholders expect?</div>
+        <div class="card" style="margin-bottom:14px">
+          <p style="font-size:14px;line-height:1.8;color:var(--ss-dark);margin-bottom:16px">
+            Different stakeholders have different expectations. Here is what each party actually receives and checks.
+          </p>
+          <table class="deliverable-table">
+            <thead><tr><th>Stakeholder</th><th>What they receive</th><th>What they check</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>OEM / Battery Manufacturer</strong><br><span style="font-size:12px;color:var(--ss-mid)">e.g. automotive OEM placing batteries on the market</span></td>
+                <td>A working DPP system with all 5 components in place. The battery can be legally placed on the EU market from Feb 2027 only if a compliant DPP exists.</td>
+                <td>All mandatory attributes populated · QR code on housing · Accessible endpoint · EU registry registration · Supplier data confirmed</td>
+              </tr>
+              <tr>
+                <td><strong>Tier Supplier</strong><br><span style="font-size:12px;color:var(--ss-mid)">providing battery components or cells</span></td>
+                <td>A data request specifying which attributes they must provide (material origin, recycled content, certificates). Their data feeds the OEM's DPP.</td>
+                <td>Data formats match requirements · Certifications are current · Responsible sourcing declarations are signed</td>
+              </tr>
+              <tr>
+                <td><strong>Market Surveillance Authority</strong><br><span style="font-size:12px;color:var(--ss-mid)">EU or national regulator</span></td>
+                <td>Access to the DPP via the EU registry link. Can audit attribute values, check methodology references, and verify data integrity.</td>
+                <td>Is the DPP accessible without login? · Are all Annex XIII attributes present? · Are carbon footprint methodology references valid? · Are supply chain declarations certified?</td>
+              </tr>
+              <tr>
+                <td><strong>Recycler / End-of-Life Operator</strong><br><span style="font-size:12px;color:var(--ss-mid)">at battery end of life</span></td>
+                <td>Access to material composition data via QR code scan. Enables correct disassembly, material sorting, and recycled content recovery.</td>
+                <td>Active cathode material · Hazardous substances · Cell chemistry · Disassembly instructions</td>
+              </tr>
+              <tr>
+                <td><strong>Consumer / Vehicle Owner</strong></td>
+                <td>A scan of the QR code returns a simplified public view: capacity, performance class, recycling instructions.</td>
+                <td>Performance class label · Capacity · Recycling symbol and instructions</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="alert info"><i class="fa-solid fa-lightbulb"></i><span><strong>What Sopra Steria delivers to the client:</strong> The Data Hub (data collection and storage), the DPP API (the access endpoint), the DPP UI (what humans see), the attribute structure (all attributes mapped to regulations), the AI layer (compliance monitoring and documentation), and the BaSyx integration (standardised machine-to-machine exchange). The client is responsible for ensuring their suppliers provide accurate data and that the QR code is physically applied to the product.</span></div>
+      </div>
+
+      <!-- SECTION 3: QR CODE -->
+      <div id="guide-qr" class="guide-section">
+        <div class="guide-section-title"><i class="fa-solid fa-qrcode"></i> The QR Code — Mandatory, Not Optional</div>
+        <div class="card">
+          <div class="qr-section">
+            <div>
+              <div class="qr-box">
+                <svg viewBox="0 0 200 200" width="110" height="110" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="10" y="10" width="58" height="58" rx="4" fill="none" stroke="#1A1A2E" stroke-width="6"/>
+                  <rect x="24" y="24" width="30" height="30" fill="#1A1A2E" rx="2"/>
+                  <rect x="132" y="10" width="58" height="58" rx="4" fill="none" stroke="#1A1A2E" stroke-width="6"/>
+                  <rect x="146" y="24" width="30" height="30" fill="#1A1A2E" rx="2"/>
+                  <rect x="10" y="132" width="58" height="58" rx="4" fill="none" stroke="#1A1A2E" stroke-width="6"/>
+                  <rect x="24" y="146" width="30" height="30" fill="#1A1A2E" rx="2"/>
+                  <rect x="84" y="10" width="10" height="10" fill="#1A1A2E"/><rect x="100" y="10" width="10" height="10" fill="#1A1A2E"/><rect x="116" y="10" width="10" height="10" fill="#1A1A2E"/>
+                  <rect x="84" y="26" width="10" height="10" fill="#1A1A2E"/><rect x="116" y="26" width="10" height="10" fill="#1A1A2E"/>
+                  <rect x="84" y="42" width="10" height="10" fill="#1A1A2E"/><rect x="100" y="42" width="10" height="10" fill="#1A1A2E"/>
+                  <rect x="84" y="58" width="10" height="10" fill="#1A1A2E"/>
+                  <rect x="84" y="84" width="10" height="10" fill="#1A1A2E"/><rect x="100" y="84" width="10" height="10" fill="#1A1A2E"/><rect x="132" y="84" width="10" height="10" fill="#1A1A2E"/><rect x="160" y="84" width="10" height="10" fill="#1A1A2E"/>
+                  <rect x="84" y="100" width="10" height="10" fill="#1A1A2E"/><rect x="116" y="100" width="10" height="10" fill="#1A1A2E"/><rect x="148" y="100" width="10" height="10" fill="#1A1A2E"/>
+                  <rect x="84" y="116" width="10" height="10" fill="#1A1A2E"/><rect x="100" y="116" width="10" height="10" fill="#1A1A2E"/><rect x="132" y="116" width="10" height="10" fill="#1A1A2E"/><rect x="160" y="116" width="10" height="10" fill="#1A1A2E"/>
+                  <rect x="84" y="132" width="10" height="10" fill="#1A1A2E"/><rect x="116" y="132" width="10" height="10" fill="#1A1A2E"/><rect x="148" y="132" width="10" height="10" fill="#1A1A2E"/>
+                  <rect x="84" y="148" width="10" height="10" fill="#1A1A2E"/><rect x="100" y="148" width="10" height="10" fill="#1A1A2E"/><rect x="132" y="148" width="10" height="10" fill="#1A1A2E"/>
+                  <rect x="84" y="164" width="10" height="10" fill="#1A1A2E"/><rect x="116" y="164" width="10" height="10" fill="#1A1A2E"/><rect x="148" y="164" width="10" height="10" fill="#1A1A2E"/><rect x="164" y="164" width="10" height="10" fill="#1A1A2E"/>
+                </svg>
+                <div class="qr-label">Battery Passport ID<br>BAT-NMC811-001</div>
+              </div>
+            </div>
+            <div>
+              <p style="font-size:14px;line-height:1.8;margin-bottom:14px">The QR code is the <strong>physical-digital bridge</strong> of a DPP. Without it, the digital record exists but cannot be accessed from the physical product — and the DPP is therefore non-compliant.</p>
+              <table class="deliverable-table">
+                <thead><tr><th>Requirement</th><th>Details</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Legal basis</strong></td><td>Article 77, EU 2023/1542 — mandatory from 18 February 2027</td></tr>
+                  <tr><td><strong>Format</strong></td><td>QR code (preferred) or NFC tag. Data matrix also accepted. Must follow ISO/IEC 15459 for the unique identifier format</td></tr>
+                  <tr><td><strong>Placement</strong></td><td>Physically marked on the battery housing AND on the outer packaging. Must be durable — readable throughout the battery's entire lifetime</td></tr>
+                  <tr><td><strong>What it links to</strong></td><td>A URL that resolves to the Battery Passport data — either directly or via the EU registry. The destination must be publicly accessible without login for the mandatory public attributes</td></tr>
+                  <tr><td><strong>Who scans it</strong></td><td>Regulators during market surveillance · Recyclers at end-of-life · Vehicle operators checking battery health · Consumers wanting product information</td></tr>
+                  <tr><td><strong>Responsibility</strong></td><td>The manufacturer or importer placing the battery on the EU market is responsible for ensuring the QR code is present, durable, and linked to a live, accurate DPP</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 4: SELF-ASSESSMENT -->
+      <div id="guide-assess" class="guide-section">
+        <div class="guide-section-title"><i class="fa-solid fa-clipboard-check"></i> Compliance Readiness Self-Assessment</div>
+        <div class="card">
+          <p style="font-size:13px;color:var(--ss-mid);margin-bottom:20px">Check every item that is currently in place for your battery product. The score updates in real time.</p>
+          <div class="checklist-layout">
+            <div class="checklist-ring-wrap">
+              <svg width="150" height="150" viewBox="0 0 150 150">
+                <circle cx="75" cy="75" r="58" fill="none" stroke="#EBEBF0" stroke-width="14"/>
+                <circle cx="75" cy="75" r="58" fill="none" stroke="#CACAD6" stroke-width="14"
+                  stroke-dasharray="364.4" stroke-dashoffset="364.4" stroke-linecap="round"
+                  transform="rotate(-90 75 75)" id="assessRing"/>
+                <text x="75" y="69" text-anchor="middle" font-size="26" font-weight="800" fill="#1A1A2E" id="assessPct">0%</text>
+                <text x="75" y="86" text-anchor="middle" font-size="10" fill="#6B6B80">of items checked</text>
+              </svg>
+              <div class="checklist-rating" id="assessRating" style="background:#EBEBF0;color:#6B6B80">Not Started</div>
+              <div style="font-size:12px;color:var(--ss-mid);text-align:center">0 / 20 items complete</div>
+              <button class="btn btn-outline btn-sm" onclick="resetChecklist()" style="margin-top:4px"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+            </div>
+            <div class="checklist-groups">
+
+              <div>
+                <div class="checklist-group-title"><i class="fa-solid fa-database"></i> Data Structure &amp; Mandatory Attributes</div>
+                <div id="checkGroup1">
+                  <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox" onchange="updateScore()"><label>Absolute carbon footprint declared (tCO₂e)<span class="item-ref">Art. 7, EU 2023/1542</span></label></div>
+                  <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox" onchange="updateScore()"><label>Carbon footprint per kWh declared<span class="item-ref">Art. 7(1)(a)</span></label></div>
+                  <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox" onchange="updateScore()"><label>Carbon footprint performance class declared (A–F)<span class="item-ref">Art. 7(1)(b)</span></label></div>
+                  <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox" onchange="updateScore()"><label>Active cathode material identified<span class="item-ref">Annex XIII</span></label></div>
+                  <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox" onchange="updateScore()"><label>Recycled content declared for Co, Li, and Ni<span class="item-ref">Art. 8, Annex X</span></label></div>
+                  <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox" onchange="updateScore()"><label>Hazardous and critical raw materials listed<span class="item-ref">Art. 13(4) &amp; EU CRM Regulation</span></label></div>
+                  <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox" onchange="updateScore()"><label>Rated capacity and expected lifetime declared<span class="item-ref">Art. 10, Annex IV</span></label></div>
+                  <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox" onchange="updateScore()"><label>CE Declaration of Conformity linked within the DPP<span class="item-ref">Art. 18</span></label></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="checklist-group-title"><i class="fa-solid fa-link"></i> Supply Chain Due Diligence</div>
+                <div>
+                  <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox" onchange="updateScore()"><label>Cobalt responsible sourcing declaration provided<span class="item-ref">Art. 48, EU 2023/1542</span></label></div>
+                  <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox" onchange="updateScore()"><label>Lithium responsible sourcing declaration provided<span class="item-ref">Art. 48</span></label></div>
+                  <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox" onchange="updateScore()"><label>Third-party audit or certification referenced<span class="item-ref">Art. 48</span></label></div>
+                  <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox" onchange="updateScore()"><label>Supplier data provenance documented for all Tier-2 inputs<span class="item-ref">Art. 48</span></label></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="checklist-group-title"><i class="fa-solid fa-qrcode"></i> Access &amp; Physical Identification</div>
+                <div>
+                  <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox" onchange="updateScore()"><label>Unique battery identifier assigned (Art. 77 format)<span class="item-ref">Art. 77</span></label></div>
+                  <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox" onchange="updateScore()"><label>QR code physically applied to battery housing<span class="item-ref">Art. 77 &amp; IEC 15459</span></label></div>
+                  <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox" onchange="updateScore()"><label>QR code links to live, accessible DPP endpoint<span class="item-ref">Art. 74</span></label></div>
+                  <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox" onchange="updateScore()"><label>DPP public attributes accessible without login<span class="item-ref">Art. 74</span></label></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="checklist-group-title"><i class="fa-solid fa-shield-halved"></i> Governance &amp; Lifecycle Maintenance</div>
+                <div>
+                  <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox" onchange="updateScore()"><label>DPP registered in EU Battery Passport registry<span class="item-ref">Art. 74 — from Feb 2027</span></label></div>
+                  <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox" onchange="updateScore()"><label>Data exportable in AAS or JSON-LD format for interoperability<span class="item-ref">ESPR Art. 9</span></label></div>
+                  <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox" onchange="updateScore()"><label>Timestamp and version history maintained on all updates<span class="item-ref">Art. 74</span></label></div>
+                  <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox" onchange="updateScore()"><label>Process defined for updating DPP when state of health changes<span class="item-ref">Art. 14</span></label></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 5: PLATFORM GUIDE -->
+      <div id="guide-platform" class="guide-section">
+        <div class="guide-section-title"><i class="fa-solid fa-desktop"></i> Platform Quick Guide</div>
+        <div class="card">
+          <table class="deliverable-table">
+            <thead><tr><th>Page</th><th>What you do there</th><th>Best used when</th></tr></thead>
+            <tbody>
+              <tr><td><strong><i class="fa-solid fa-clipboard-list" style="color:var(--ss-purple-deep)"></i> Portfolio</strong></td><td>See all battery products with their readiness scores. Click any row to open the full DPP for that product.</td><td>Starting a demo · Giving an overview · Identifying which products need attention</td></tr>
+              <tr><td><strong><i class="fa-solid fa-bullseye" style="color:var(--ss-purple-deep)"></i> Compliance Cockpit</strong></td><td>Detailed gap analysis for a specific product. Shows which attributes are missing, partial, or future-required, with AI-prioritised action list.</td><td>Working with a client to diagnose their gaps · Before a regulatory audit</td></tr>
+              <tr><td><strong><i class="fa-solid fa-tower-broadcast" style="color:var(--ss-purple-deep)"></i> Regulatory Radar</strong></td><td>Full EU regulatory timeline from 2023 to 2030. Shows what is required at each milestone and how your portfolio maps to it.</td><td>Strategic planning sessions · Showing a client what is coming in 2027–2030</td></tr>
+              <tr><td><strong><i class="fa-solid fa-robot" style="color:var(--ss-purple-deep)"></i> Agent Dashboard</strong></td><td>Four AI agents that automate regulatory monitoring, data completeness, attribute lifecycle, and audit preparation. Each requires human approval before acting.</td><td>Demonstrating AI automation value · Showing Sopra Steria's differentiation</td></tr>
+              <tr><td><strong><i class="fa-solid fa-code-merge" style="color:var(--ss-purple-deep)"></i> Merge DPPs</strong></td><td>Combine two battery products into a merged DPP. Automatically resolves attribute conflicts and generates a new compliant passport.</td><td>Client has combined battery systems or remanufactured packs requiring a new DPP</td></tr>
+              <tr><td><strong><i class="fa-solid fa-arrows-split-up-and-left" style="color:var(--ss-purple-deep)"></i> Interoperability</strong></td><td>Export DPP data in AAS, AASX, JSON-LD, REST API, QR Code, or Audit PDF. Shows BaSyx registry integration.</td><td>Technical audiences · Demonstrating standards compliance · Regulator access discussion</td></tr>
+              <tr><td><strong><i class="fa-solid fa-robot" style="color:var(--ss-magenta)"></i> DPP Assistant</strong></td><td>AI chatbot in the bottom-right corner. Ask questions about compliance, gaps, or regulatory requirements in plain language.</td><td>Live demos — type or click a pre-loaded question to show AI reasoning on top of data</td></tr>
+            </tbody>
+          </table>
+          <div style="background:linear-gradient(135deg,#EEE7F8,#FDF8E8);border:1.5px solid #C4B5F4;border-radius:9px;padding:18px 22px;margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:20px">
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--ss-purple-deep);margin-bottom:4px"><i class="fa-solid fa-play"></i> &nbsp;Guided Demo Tour — 11 steps, ~15 minutes</div>
+              <div style="font-size:13px;color:var(--ss-mid);line-height:1.6">The tour automatically navigates between pages, highlights the relevant element on screen, and guides you through every key feature. Use it to rehearse before a client meeting or to walk a client through the platform live.</div>
+            </div>
+            <button class="btn btn-primary" onclick="startTour()" style="flex-shrink:0;padding:12px 22px;font-size:13px"><i class="fa-solid fa-play"></i> Start Guided Tour</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- AI CHAT FAB -->
+<button class="chat-fab" onclick="toggleChat()" title="DPP Assistant">
+  <i class="fa-solid fa-robot"></i>
+</button>
+
+<!-- AI CHAT PANEL -->
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-header">
+    <div class="chat-header-left">
+      <div class="chat-avatar"><i class="fa-solid fa-robot"></i></div>
+      <div>
+        <div class="chat-header-name">DPP Assistant</div>
+        <div class="chat-header-sub">EU 2023/1542 &amp; ESPR regulatory knowledge</div>
+      </div>
+    </div>
+    <button class="chat-close" onclick="toggleChat()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="msg ai">Hello. I have full context on your battery portfolio and EU regulatory requirements.<br><br>Ask me about compliance status, attribute gaps, or upcoming obligations under EU 2023/1542 and ESPR.</div>
+  </div>
+  <div class="chat-suggestions" id="chatSuggestions">
+    <span class="chat-sug" onclick="sendSug(this)">Is NMC811 ready for 2027?</span>
+    <span class="chat-sug" onclick="sendSug(this)">What is missing on LCO-G?</span>
+    <span class="chat-sug" onclick="sendSug(this)">What is required in 2028?</span>
+    <span class="chat-sug" onclick="sendSug(this)">Explain Art. 7 carbon footprint</span>
+  </div>
+  <div class="chat-input-row">
+    <input class="chat-input" id="chatInput" placeholder="Ask about compliance, gaps, regulations..." onkeydown="if(event.key==='Enter')sendChat()">
+    <button class="chat-send" onclick="sendChat()"><i class="fa-solid fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<!-- MODAL: ATTRIBUTE ENGINE -->
+<div class="modal-overlay" id="modal-attr-engine" onclick="closeModal('modal-attr-engine')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-header-icon purple"><i class="fa-solid fa-gears"></i></div>
+      <div>
+        <div class="modal-title">Attribute Engine</div>
+        <div class="modal-tag"><i class="fa-solid fa-clock"></i> Planned — Sprint 3</div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <p class="modal-desc">
+        The Attribute Engine is the governance layer that makes DPP categories and attributes fully dynamic.
+        Today, attributes are statically defined in the backend and require a developer deployment to change.
+        The Attribute Engine will allow administrators to create, update, version, and retire attributes entirely
+        from within the platform — without touching code.
+      </p>
+      <div class="modal-feature-list">
+        <div class="modal-feature">
+          <i class="fa-solid fa-plus-circle"></i>
+          <div class="modal-feature-text"><strong>Dynamic attribute creation</strong> — define new attributes with name, description, unit, data type, validation rules, and regulatory reference through a form interface. No backend deployment required.</div>
+        </div>
+        <div class="modal-feature">
+          <i class="fa-solid fa-code-branch"></i>
+          <div class="modal-feature-text"><strong>Versioning and lifecycle management</strong> — every attribute change is versioned. Previous versions are retained for historical DPP records. Changes go through a review → approve → publish workflow before becoming active.</div>
+        </div>
+        <div class="modal-feature">
+          <i class="fa-solid fa-robot"></i>
+          <div class="modal-feature-text"><strong>AI-assisted generation</strong> — feed a new regulatory text (e.g. a delegated act PDF) and the Attribute Lifecycle Manager agent will propose a complete set of new attribute definitions, ready for review.</div>
+        </div>
+        <div class="modal-feature">
+          <i class="fa-solid fa-shield-halved"></i>
+          <div class="modal-feature-text"><strong>Validation rules</strong> — set allowed data types, value ranges, mandatory/optional flags, and cross-attribute dependencies. Attributes that fail validation are flagged before a DPP is marked compliant.</div>
+        </div>
+        <div class="modal-feature">
+          <i class="fa-solid fa-file-export"></i>
+          <div class="modal-feature-text"><strong>Import / export</strong> — export the full attribute catalog as JSON or Excel. Import pre-defined attribute sets from external sources (e.g. industry consortia or EU standard bodies).</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="modal-eta"><i class="fa-solid fa-calendar-days"></i> Estimated availability: Sprint 3 — Q3 2026</div>
+      <button class="btn btn-primary btn-sm" onclick="closeModal('modal-attr-engine')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: AUDIT LOG -->
+<div class="modal-overlay" id="modal-audit-log" onclick="closeModal('modal-audit-log')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-header-icon blue"><i class="fa-solid fa-scroll"></i></div>
+      <div>
+        <div class="modal-title">Audit Log</div>
+        <div class="modal-tag"><i class="fa-solid fa-clock"></i> Planned — Sprint 3</div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <p class="modal-desc">
+        The Audit Log is the immutable, timestamped record of every action taken on the platform —
+        every data change, every compliance status update, every agent action, every export, and every
+        approval decision. It is the core traceability mechanism that regulators and auditors will rely on
+        to verify that your DPP data is trustworthy and has not been altered without authorisation.
+      </p>
+      <div class="modal-feature-list">
+        <div class="modal-feature">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <div class="modal-feature-text"><strong>Complete event history</strong> — every write operation on the platform is logged: who made the change, what was changed, the previous value, the new value, and the exact timestamp. Records are immutable once written.</div>
+        </div>
+        <div class="modal-feature">
+          <i class="fa-solid fa-filter"></i>
+          <div class="modal-feature-text"><strong>Filtered views</strong> — filter the log by product, user, date range, action type (data edit, approval, export, agent run), or attribute category. Useful for targeted investigation during an audit.</div>
+        </div>
+        <div class="modal-feature">
+          <i class="fa-solid fa-robot"></i>
+          <div class="modal-feature-text"><strong>Agent action traceability</strong> — every action taken by an AI agent is logged separately with the agent name, the trigger, the steps executed, the approval decision, and the approver. Full accountability for automated actions.</div>
+        </div>
+        <div class="modal-feature">
+          <i class="fa-solid fa-file-lines"></i>
+          <div class="modal-feature-text"><strong>Export for regulatory submission</strong> — export a filtered or full audit log as PDF or CSV for inclusion in a market surveillance response, internal audit, or regulatory filing.</div>
+        </div>
+        <div class="modal-feature">
+          <i class="fa-solid fa-lock"></i>
+          <div class="modal-feature-text"><strong>Tamper-evident design</strong> — log entries are write-once. No user, including administrators, can delete or modify a log entry. Deletion of DPP data is itself logged as an event.</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="modal-eta"><i class="fa-solid fa-calendar-days"></i> Estimated availability: Sprint 3 — Q3 2026</div>
+      <button class="btn btn-primary btn-sm" onclick="closeModal('modal-audit-log')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: EXPORT CENTER -->
+<div class="modal-overlay" id="modal-export-center" onclick="closeModal('modal-export-center')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-header-icon purple"><i class="fa-solid fa-file-export"></i></div>
+      <div>
+        <div class="modal-title">Export Center</div>
+        <div class="modal-tag"><i class="fa-solid fa-clock"></i> Planned — Sprint 3</div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <p class="modal-desc">
+        The Export Center is the dedicated hub for managing all DPP data exports across the platform.
+        Today, exports are triggered individually per product from the Interoperability page.
+        The Export Center will allow batch exports, scheduled recurring exports, export history tracking,
+        and configurable format templates — all in one place.
+      </p>
+      <div class="modal-feature-list">
+        <div class="modal-feature">
+          <i class="fa-solid fa-layer-group"></i>
+          <div class="modal-feature-text"><strong>Batch export</strong> — select multiple products at once and export their DPPs in a chosen format (AAS, JSON-LD, CSV, PDF). Today you can only export one product at a time.</div>
+        </div>
+        <div class="modal-feature">
+          <i class="fa-solid fa-calendar-check"></i>
+          <div class="modal-feature-text"><strong>Scheduled exports</strong> — configure recurring exports (e.g. every Monday, export all products as AAS Submodel JSON to a shared folder or API endpoint). Useful for keeping BaSyx registries and external systems in sync automatically.</div>
+        </div>
+        <div class="modal-feature">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <div class="modal-feature-text"><strong>Export history</strong> — a full log of every export: who triggered it, when, which products, which format, and whether it succeeded. Useful for audit evidence that data was shared with a regulator or OEM partner at a specific point in time.</div>
+        </div>
+        <div class="modal-feature">
+          <i class="fa-solid fa-sliders"></i>
+          <div class="modal-feature-text"><strong>Format templates</strong> — save custom export configurations (e.g. "Regulator package: NMC batteries, PDF format, include audit trail") and reuse them with one click instead of configuring each export from scratch.</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="modal-eta"><i class="fa-solid fa-calendar-days"></i> Estimated availability: Sprint 3 — Q3 2026</div>
+      <button class="btn btn-primary btn-sm" onclick="closeModal('modal-export-center')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- GUIDED TOUR BAR -->
+<div class="tour-bar" id="tourBar">
+  <div class="tour-progress-wrap">
+    <div class="tour-step-label" id="tourLabel">Step 1 of 11</div>
+    <div class="tour-track"><div class="tour-fill" id="tourFill" style="width:9%"></div></div>
+  </div>
+  <div class="tour-body">
+    <div class="tour-title" id="tourTitle"></div>
+    <div class="tour-text" id="tourText"></div>
+  </div>
+  <div class="tour-actions">
+    <button class="tour-btn t-skip" onclick="endTour()">Exit tour</button>
+    <button class="tour-btn t-prev" id="tourPrev" onclick="tourMove(-1)"><i class="fa-solid fa-chevron-left"></i> Back</button>
+    <button class="tour-btn t-next" id="tourNext" onclick="tourMove(1)">Next <i class="fa-solid fa-chevron-right"></i></button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ── NAVIGATION ───────────────────────────────────────────────────
+const PAGES = ['portfolio','product','cockpit','radar','agents','interop','merge','guide'];
+const NAV_MAP = {
+  portfolio:'nav-portfolio', product:'nav-portfolio',
+  cockpit:'nav-compliance', radar:'nav-compliance',
+  agents:'nav-automation',  merge:'nav-automation',
+  interop:'nav-interop',    guide:null, merge:null
+};
+function showPage(name) {
+  PAGES.forEach(p => document.getElementById('page-'+p)?.classList.remove('active'));
+  const target = document.getElementById('page-'+name);
+  if(target) target.classList.add('active');
+  if(name==='merge') { var ml=document.getElementById('mergeProductList'); if(ml&&ml.children.length===0) initMerge(); }
+  // update nav highlight
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const activeId = NAV_MAP[name];
+  if(activeId) document.getElementById(activeId)?.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ── GUIDE SCROLL ──────────────────────────────────────────────────
+function scrollToSection(id) {
+  showPage('guide');
+  setTimeout(()=>{ const el=document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); },100);
+}
+
+// ── CHECKLIST / SELF-ASSESSMENT ───────────────────────────────────
+const SCORE_COLORS = { high:'#1A9B5F', mid:'#D97706', low:'#C0392B', none:'#CACAD6' };
+const RATING_MAP = [
+  {min:90, label:'Passport Ready',  bg:'#D4F0E3', color:'#0E6B42'},
+  {min:70, label:'Nearly Ready',    bg:'#DBEAFE', color:'#1D4ED8'},
+  {min:40, label:'In Progress',     bg:'#FEF0D8', color:'#92400E'},
+  {min:0,  label:'Not Started',     bg:'#EBEBF0', color:'#6B6B80'}
+];
+function toggleCheck(row) {
+  const cb = row.querySelector('input[type=checkbox]');
+  cb.checked = !cb.checked;
+  row.classList.toggle('checked', cb.checked);
+  updateScore();
+}
+function updateScore() {
+  const all = document.querySelectorAll('.checklist-item input[type=checkbox]');
+  const checked = [...all].filter(c=>c.checked).length;
+  const pct = Math.round((checked/all.length)*100);
+  const ring = document.getElementById('assessRing');
+  const pctEl = document.getElementById('assessPct');
+  const ratingEl = document.getElementById('assessRating');
+  const countEl = ratingEl?.nextElementSibling;
+  if(!ring||!pctEl||!ratingEl) return;
+  const circ = 364.4;
+  const offset = circ*(1-pct/100);
+  const col = pct>=90?SCORE_COLORS.high:pct>=70?SCORE_COLORS.mid:pct>=40?SCORE_COLORS.low:SCORE_COLORS.none;
+  ring.style.stroke = col;
+  ring.setAttribute('stroke-dashoffset', offset.toFixed(1));
+  pctEl.textContent = pct+'%';
+  pctEl.style.fill = col;
+  const r = RATING_MAP.find(r=>pct>=r.min);
+  ratingEl.textContent = r.label;
+  ratingEl.style.background = r.bg;
+  ratingEl.style.color = r.color;
+  if(countEl) countEl.textContent = `${checked} / ${all.length} items complete`;
+}
+function resetChecklist() {
+  document.querySelectorAll('.checklist-item').forEach(r=>{ r.querySelector('input').checked=false; r.classList.remove('checked'); });
+  updateScore();
+}
+
+// ── MERGE DPPs (N products) ───────────────────────────────────────
+const MERGE_DATA = {
+  NMC811: { label:'NMC811',   cap:32, cf:1.0,  cfkwh:31.0, cls:'C', coCo:18, coLi:6, coNi:5, chem:'NMC 811',   id:'BAT-NMC811-001', score:91 },
+  NMC622: { label:'NMC622-G', cap:28, cf:0.84, cfkwh:30.0, cls:'C', coCo:15, coLi:5, coNi:4, chem:'NMC 622-G', id:'BAT-NMC622-001', score:85 },
+  NMC955: { label:'NMC955-G', cap:36, cf:1.1,  cfkwh:31.5, cls:'C', coCo:12, coLi:4, coNi:3, chem:'NMC 955-G', id:'BAT-NMC955-001', score:78 },
+  LCO:    { label:'LCO-G',    cap:24, cf:0.9,  cfkwh:33.0, cls:'D', coCo:10, coLi:3, coNi:2, chem:'LCO',       id:'BAT-LCO-001',    score:62 },
+  LFP1:   { label:'LFP-G1',   cap:60, cf:1.5,  cfkwh:28.0, cls:'B', coCo:22, coLi:8, coNi:6, chem:'LFP',       id:'BAT-LFP1-001',   score:95 },
+  LFP2:   { label:'LFP-G2',   cap:55, cf:1.4,  cfkwh:29.0, cls:'B', coCo:20, coLi:7, coNi:5, chem:'LFP',       id:'BAT-LFP2-001',   score:88 }
+};
+const MERGE_OPTIONS = Object.entries(MERGE_DATA).map(([k,v])=>`<option value="${k}">${v.label} — ${v.chem} (${v.score}% ready)</option>`).join('');
+
+let _mergeRowCount = 0;
+window._mergedProducts = {};
+
+function initMerge() {
+  _mergeRowCount = 0;
+  document.getElementById('mergeProductList').innerHTML = '';
+  addMergeRow('NMC811');
+  addMergeRow('NMC622');
+  updateRemoveButtons();
+}
+
+function addMergeRow(defaultKey) {
+  _mergeRowCount++;
+  var idx = _mergeRowCount;
+  var div = document.createElement('div');
+  div.className = 'merge-product-row';
+  div.id = 'merge-row-' + idx;
+
+  var numEl = document.createElement('div');
+  numEl.className = 'merge-product-num';
+  numEl.textContent = idx;
+
+  var sel = document.createElement('select');
+  sel.className = 'form-select merge-sel';
+  sel.style.cssText = 'flex:1;padding:9px 12px;font-size:13px';
+  sel.innerHTML = MERGE_OPTIONS;
+
+  var btn = document.createElement('button');
+  btn.className = 'merge-remove-btn';
+  btn.innerHTML = '<i class="fa-solid fa-xmark"></i> Remove';
+  btn.onclick = function() { removeMergeRow(idx); };
+
+  div.appendChild(numEl);
+  div.appendChild(sel);
+  div.appendChild(btn);
+  document.getElementById('mergeProductList').appendChild(div);
+  if(defaultKey) sel.value = defaultKey;
+  updateRemoveButtons();
+  var s2 = document.getElementById('mergeStep2');
+  var s3 = document.getElementById('mergeStep3');
+  if(s2) s2.style.display='none';
+  if(s3) s3.style.display='none';
+}
+
+function removeMergeRow(idx) {
+  const rows = document.querySelectorAll('.merge-product-row');
+  if(rows.length <= 2) { showToast('At least 2 products are required to merge'); return; }
+  document.getElementById('merge-row-' + idx)?.remove();
+  document.querySelectorAll('.merge-product-row .merge-product-num').forEach((n,i) => n.textContent = i+1);
+  updateRemoveButtons();
+  document.getElementById('mergeStep2').style.display='none';
+  document.getElementById('mergeStep3').style.display='none';
+}
+
+function updateRemoveButtons() {
+  const rows = document.querySelectorAll('.merge-product-row');
+  rows.forEach(r => r.querySelector('.merge-remove-btn').disabled = rows.length <= 2);
+}
+
+function getSelectedKeys() {
+  return [...document.querySelectorAll('.merge-sel')].map(s => s.value);
+}
+
+function runMergeComparison() {
+  const keys = getSelectedKeys();
+  if(keys.length < 2) { showToast('Add at least 2 products'); return; }
+  const dupes = keys.filter((k,i) => keys.indexOf(k) !== i);
+  if(dupes.length) { showToast('Remove duplicate product selections before comparing'); return; }
+  const prods = keys.map(k => MERGE_DATA[k]);
+  const totalCap = prods.reduce((s,p) => s+p.cap, 0);
+  const totalCF  = prods.reduce((s,p) => s+p.cf,  0);
+  const cfkwhM   = prods.reduce((s,p) => s + p.cfkwh*p.cap, 0) / totalCap;
+  const clsM     = prods.reduce((w,p) => p.cls > w ? p.cls : w, 'A');
+  const coCo     = prods.reduce((s,p) => s + p.coCo*p.cap, 0) / totalCap;
+  const coLi     = prods.reduce((s,p) => s + p.coLi*p.cap, 0) / totalCap;
+  const coNi     = prods.reduce((s,p) => s + p.coNi*p.cap, 0) / totalCap;
+  const chems    = [...new Set(prods.map(p=>p.chem))];
+  const chemConflict = chems.length > 1;
+  const idNew    = 'MERGED-' + keys.join('-') + '-001';
+  const mergeType = document.getElementById('mergeType').value;
+  const typeLabel = mergeType==='combined'?'Combined Battery System':mergeType==='remanufactured'?'Remanufactured Battery':'Module Integration';
+
+  // Dynamic header
+  const thead = document.getElementById('mergeCompareTable').querySelector('thead tr');
+  thead.innerHTML = '<th>Attribute</th>' + prods.map(p=>`<th>${p.label}</th>`).join('') + '<th>Merged Value</th><th>Resolution</th>';
+
+  const attrRows = [
+    { attr:'Unique Battery Identifier', vals:prods.map(p=>p.id), merged:idNew, res:'generated', type:'resolved' },
+    { attr:'Rated Capacity', vals:prods.map(p=>p.cap+' Ah'), merged:totalCap+' Ah', res:'sum of all', type:'resolved' },
+    { attr:'Absolute Carbon Footprint', vals:prods.map(p=>p.cf+' tCO₂e'), merged:totalCF.toFixed(2)+' tCO₂e', res:'sum of all', type:'resolved' },
+    { attr:'CF per Functional Unit', vals:prods.map(p=>p.cfkwh+' kgCO₂e/kWh'), merged:cfkwhM.toFixed(1)+' kgCO₂e/kWh', res:'weighted average', type:'resolved' },
+    { attr:'Performance Class', vals:prods.map(p=>'Class '+p.cls), merged:'Class '+clsM, res:'conservative (worst)', type:new Set(prods.map(p=>p.cls)).size===1?'match':'resolved' },
+    { attr:'Recycled Content — Cobalt', vals:prods.map(p=>p.coCo+'%'), merged:coCo.toFixed(1)+'%', res:'weighted average', type:'resolved' },
+    { attr:'Recycled Content — Lithium', vals:prods.map(p=>p.coLi+'%'), merged:coLi.toFixed(1)+'%', res:'weighted average', type:'resolved' },
+    { attr:'Recycled Content — Nickel', vals:prods.map(p=>p.coNi+'%'), merged:coNi.toFixed(1)+'%', res:'weighted average', type:'resolved' },
+    { attr:'Active Cathode Material', vals:prods.map(p=>p.chem), merged:chemConflict?'Manual specification required':chems[0], res:chemConflict?'manual review':'identical', type:chemConflict?'conflict':'match' },
+    { attr:'CE Declaration of Conformity', vals:prods.map(()=>'Available'), merged:'All required — combined', res:'all sources required', type:'match' }
+  ];
+
+  document.getElementById('mergeTableBody').innerHTML = attrRows.map(r=>`<tr>
+    <td><strong>${r.attr}</strong></td>
+    ${r.vals.map(v=>`<td>${v}</td>`).join('')}
+    <td class="merged-val">${r.merged}</td>
+    <td><span class="merge-badge ${r.type}"><i class="fa-solid ${r.type==='match'?'fa-equals':r.type==='resolved'?'fa-calculator':'fa-triangle-exclamation'}"></i> ${r.res}</span></td>
+  </tr>`).join('');
+
+  document.getElementById('mergeStep2Sub').textContent = `Merging ${prods.map(p=>p.label).join(' + ')} — ${typeLabel}`;
+  document.getElementById('mergeStep2').style.display='block';
+  document.getElementById('mergeStep2').scrollIntoView({behavior:'smooth',block:'start'});
+  window._mergeResult = { prods, keys, totalCap, totalCF, cfkwhM, clsM, coCo, coLi, coNi, idNew, chemConflict, mergeType, typeLabel };
+}
+
+function showMergePreview() {
+  const m = window._mergeResult; if(!m) return;
+  const avgScore = Math.round(m.prods.reduce((s,p)=>s+p.score,0)/m.prods.length);
+  document.getElementById('mergePreviewGrid').innerHTML = `
+    <div class="preview-item"><div class="preview-item-label">New DPP Identifier</div><div class="preview-item-value" style="font-size:11px">${m.idNew}</div></div>
+    <div class="preview-item"><div class="preview-item-label">Products merged</div><div class="preview-item-value">${m.prods.length}</div></div>
+    <div class="preview-item"><div class="preview-item-label">Total Rated Capacity</div><div class="preview-item-value">${m.totalCap} Ah</div></div>
+    <div class="preview-item"><div class="preview-item-label">Combined Carbon Footprint</div><div class="preview-item-value">${m.totalCF.toFixed(2)} tCO₂e</div></div>
+    <div class="preview-item"><div class="preview-item-label">CF per kWh (weighted)</div><div class="preview-item-value">${m.cfkwhM.toFixed(1)} kgCO₂e/kWh</div></div>
+    <div class="preview-item"><div class="preview-item-label">Performance Class</div><div class="preview-item-value">Class ${m.clsM}</div></div>`;
+  const conflictNote = m.chemConflict?' A <strong>manual specification is required</strong> for Active Cathode Material — source products have different chemistries.':'';
+  document.getElementById('mergeAINote').innerHTML = `The merged passport covers <strong>${m.prods.length} source products</strong>: ${m.prods.map(p=>`<strong>${p.label}</strong>`).join(', ')}. Total capacity: <strong>${m.totalCap} Ah</strong>. Combined carbon footprint: <strong>${m.totalCF.toFixed(2)} tCO₂e</strong>. Performance class: <strong>Class ${m.clsM}</strong> (assigned from the lowest-rated source). Estimated 2027 readiness: <strong>${avgScore}%</strong>, reflecting the average across all source products.${conflictNote}`;
+  document.getElementById('mergeStep3').style.display='block';
+  document.getElementById('mergeStep3').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function confirmMerge() {
+  const m = window._mergeResult; if(!m) return;
+
+  const score = Math.round(m.prods.reduce((s,p)=>s+p.score,0)/m.prods.length);
+  const scoreColor = score>=85?'var(--compliant)':score>=70?'var(--partial)':'var(--missing)';
+  const badgeCls   = score>=85?'compliant':score>=70?'partial':'missing';
+  const badgeIcon  = score>=85?'fa-circle-check':score>=70?'fa-circle-half-stroke':'fa-circle-xmark';
+  const badgeLabel = score>=85?'Compliant':score>=70?'Partial':'Gaps Found';
+  const chems      = [...new Set(m.prods.map(p=>p.chem))].join(' / ');
+  const today      = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+  const shortId    = m.idNew.length > 30 ? m.idNew.substring(0,30)+'…' : m.idNew;
+
+  // Build the new portfolio row
+  var tr = document.createElement('tr');
+  tr.style.background = '#F8F5FD'; // highlight new row
+  tr.innerHTML = `
+    <td>
+      <div class="product-name" style="color:var(--ss-magenta)">${shortId}</div>
+      <div class="product-sub">${m.typeLabel} &nbsp;·&nbsp; ${m.prods.length} sources</div>
+    </td>
+    <td>${chems}</td>
+    <td><span class="mono">Auto-generated &nbsp;·&nbsp; ${m.prods.map(p=>p.label).join('+')}</span></td>
+    <td>
+      <div class="score-bar-wrap">
+        <div class="score-bar-bg"><div class="score-bar-fill" style="width:${score}%;background:${scoreColor}"></div></div>
+        <span class="score-num" style="color:${scoreColor}">${score}%</span>
+      </div>
+    </td>
+    <td><span class="badge ${badgeCls}"><i class="fa-solid ${badgeIcon}"></i> ${badgeLabel}</span></td>
+    <td style="color:var(--ss-mid)">${today}</td>`;
+
+  // Insert at top of portfolio table
+  var table = document.getElementById('portfolioTable');
+  if(table) {
+    var tbody = table.querySelector('tbody');
+    if(tbody && tbody.firstChild) tbody.insertBefore(tr, tbody.firstChild);
+    else if(tbody) tbody.appendChild(tr);
+  }
+
+  // Update total products stat
+  var statVal = document.querySelector('#stat-grid-portfolio .stat-value');
+  if(statVal) statVal.textContent = parseInt(statVal.textContent||'0') + 1;
+
+  // Store merged product data for detail view
+  var mergeKey = m.idNew;
+  window._mergedProducts[mergeKey] = {
+    idNew: m.idNew, typeLabel: m.typeLabel, prods: m.prods,
+    totalCap: m.totalCap, totalCF: m.totalCF, cfkwhM: m.cfkwhM,
+    clsM: m.clsM, coCo: m.coCo, coLi: m.coLi, coNi: m.coNi,
+    chemConflict: m.chemConflict, mergeType: m.mergeType, score: score,
+    chems: chems, today: today
+  };
+  tr.style.cursor = 'pointer';
+  tr.onclick = (function(k){ return function(){ showMergedProductDetail(k); }; })(mergeKey);
+
+  // Navigate to portfolio and scroll to top
+  showPage('portfolio');
+  setTimeout(function(){ tr.scrollIntoView({behavior:'smooth',block:'center'}); }, 300);
+
+  // Fade highlight after 3 seconds
+  setTimeout(function(){ tr.style.transition='background 1s'; tr.style.background=''; }, 3000);
+
+  // Reset merge wizard
+  document.getElementById('mergeStep2').style.display='none';
+  document.getElementById('mergeStep3').style.display='none';
+  window._mergeResult = null;
+
+  showToast('Merged DPP added to Portfolio — ' + shortId);
+}
+
+function downloadMergeJSON() {
+  const m = window._mergeResult; if(!m) return;
+  const obj = {
+    dpp_id:m.idNew, regulation:'EU 2023/1542', merge_type:m.mergeType,
+    source_products:m.prods.map(p=>p.label), source_count:m.prods.length,
+    attributes:{
+      rated_capacity_ah:m.totalCap, carbon_footprint_tCO2e:parseFloat(m.totalCF.toFixed(2)),
+      carbon_footprint_per_kwh:parseFloat(m.cfkwhM.toFixed(1)), performance_class:'Class '+m.clsM,
+      recycled_cobalt_pct:parseFloat(m.coCo.toFixed(1)), recycled_lithium_pct:parseFloat(m.coLi.toFixed(1)),
+      recycled_nickel_pct:parseFloat(m.coNi.toFixed(1)), cathode_material_conflict:m.chemConflict
+    },
+    created:new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download = m.idNew+'.json'; a.click();
+}
+
+// ── EXPORTS (real downloads) ─────────────────────────────────────
+function downloadAll() {
+  const csv = 'Product,Type,GTIN,Score,Status\nNMC811,PHEV Battery,04012345000000,91%,Compliant\nNMC622-G,PHEV Battery,04012345000001,85%,Compliant\nNMC955-G,PHEV Battery,04012345000002,78%,Partial\nLCO-G,PHEV Battery,04012345000003,62%,Gaps Found\nLFP-G1,EV Battery,04012345000004,95%,Compliant\nLFP-G2,EV Battery,04012345000005,88%,Compliant';
+  const blob = new Blob([csv],{type:'text/csv'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='DPP-Portfolio-Export.csv'; a.click();
+  showToast('Portfolio exported as CSV — check your downloads');
+}
+
+function showExportToast(fmt) {
+  if(fmt==='Audit PDF Package') { downloadAuditDoc(); return; }
+  if(fmt==='AAS Submodel JSON') { downloadAAS(); return; }
+  if(fmt==='REST API Endpoint') { showToast('REST API endpoint: https://portal.dpp-hub.eu/api/v1/batteries/SN-DEMO-001 (requires OAuth 2.0 — see docs)'); return; }
+  showToast(`${fmt} — export simulated in demo mode. In production, this generates and downloads the real file.`);
+}
+
+function downloadAAS() {
+  const aas = {"modelType":"AssetAdministrationShell","id":"BAT-NMC811-001","assetInformation":{"assetKind":"Instance","globalAssetId":"urn:battery:NMC811:SN-DEMO-001"},"submodels":[{"type":"ModelReference","keys":[{"type":"Submodel","value":"urn:dpp:battery:NMC811:carbonFootprint"}]}]};
+  const blob = new Blob([JSON.stringify(aas,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='NMC811-AAS-Submodel.json'; a.click();
+  showToast('AAS Submodel JSON downloaded');
+}
+
+function downloadAuditDoc() {
+  const txt = `BATTERY PASSPORT AUDIT PACKAGE
+EU Battery Regulation (EU 2023/1542)
+Generated: ${new Date().toLocaleDateString('en-GB')}
+
+PRODUCT: NMC811 PHEV Battery
+SERIAL NUMBER: SN-DEMO-001
+GTIN: 04012345000000
+UNIQUE BATTERY ID: BAT-NMC811-001
+2027 READINESS: 91%
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CATEGORY 1: BATTERY CARBON FOOTPRINT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Absolute Carbon Footprint: 1 tCO₂e [Compliant — Art. 7, Annex II]
+CF per Functional Unit: 31.0 kgCO₂e/kWh [Compliant — Art. 7(1)(a)]
+Performance Class: C [Compliant — Art. 7(1)(b)]
+
+CATEGORY 2: MATERIALS AND COMPOSITION
+Active Cathode Material: NMC 811 [Compliant — Annex XIII]
+Hazardous Substances: Cobalt <0.1% [Compliant — Art. 13(4)]
+Critical Raw Materials: Li, Co, Ni, Mn [Declared — EU CRM Regulation]
+
+CATEGORY 3: CIRCULARITY
+Recycled Cobalt: 18% [Compliant — Art. 8, Annex X]
+Recycled Lithium: 6% [Compliant — Art. 8, Annex X]
+Recycled Nickel: 5% [Compliant — Art. 8, Annex X]
+
+CATEGORY 4: IDENTIFIERS
+Unique Battery ID: BAT-NMC811-001 [Compliant — Art. 77]
+
+CATEGORY 5: PERFORMANCE & DURABILITY
+Rated Capacity: 32 Ah [Compliant — Art. 10, Annex IV]
+Expected Lifetime: 10 years / 1,500 cycles [Compliant — Art. 10(1)(a)]
+
+CATEGORY 6: SUPPLY CHAIN DUE DILIGENCE
+Cobalt Sourcing: DRC — certified OECD [Compliant — Art. 48]
+Lithium Origin: Chile, Australia [Compliant — Art. 48]
+
+CATEGORY 7: CONFORMITY & DOCUMENTATION
+CE Declaration: Available [Compliant — Art. 18]
+Battery Label: Compliant — IEC 62133 [Compliant — Art. 13]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ADVISORY GAPS (non-blocking — future requirements)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+State of Health Disclosure: Expected mandatory 2026-2027 (Art. 14 delegated act)
+Recycled Content Threshold Declaration: Mandatory from 2028 (Art. 8.4)
+
+CONCLUSION: This battery product meets all mandatory requirements
+for the EU Battery Passport deadline of 18 February 2027.
+No blocking compliance gaps identified.
+
+[AI-generated · Sopra Steria DPP Platform · EU 2023/1542 aligned]`;
+  const blob = new Blob([txt],{type:'text/plain'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='NMC811-Audit-Package.txt'; a.click();
+  showToast('Audit package downloaded');
+}
+
+// ── PERSONA ───────────────────────────────────────────────────────
+const PERSONAS = {
+  oem: {
+    cls:'oem', icon:'fa-industry',
+    text:'<strong>Manufacturer View:</strong> Compliance status across your battery portfolio. Priority: all products must have a valid Battery Passport before placing on the EU market from 18 February 2027.',
+    stats:[
+      { icon:'fa-battery-three-quarters', cls:'red',    val:'11',  label:'Battery Products' },
+      { icon:'fa-circle-check',           cls:'green',  val:'8',   label:'Fully Compliant' },
+      { icon:'fa-triangle-exclamation',   cls:'gold',   val:'3',   label:'Gaps to Close' },
+      { icon:'fa-calendar-days',          cls:'purple', val:'606', label:'Days to Feb 2027' }
+    ],
+    alert: { type:'info', icon:'fa-industry', text:'<strong>Priority action:</strong> LCO-G has 3 blocking Supply Chain gaps. 2 products require Circularity data before Q4 2026 validation cycles. All other products are on track for February 2027.' },
+    suggestions:['Is NMC811 ready for 2027?','What is missing on LCO-G?','What is required in 2028?','Explain Art. 7 carbon footprint']
+  },
+  supplier: {
+    cls:'supplier', icon:'fa-screwdriver-wrench',
+    text:'<strong>Tier Supplier View:</strong> Your data completeness determines your ability to supply. 2 open data requests from OEM partners are currently pending your response.',
+    stats:[
+      { icon:'fa-circle-xmark',         cls:'red',    val:'5',  label:'Missing Attributes' },
+      { icon:'fa-envelope-open-text',   cls:'gold',   val:'2',  label:'Open Data Requests' },
+      { icon:'fa-clock',                cls:'purple', val:'1',  label:'Overdue (>10 days)' },
+      { icon:'fa-circle-check',         cls:'green',  val:'8',  label:'Products Supplied' }
+    ],
+    alert: { type:'warning', icon:'fa-triangle-exclamation', text:'<strong>Overdue response:</strong> A data request for LCO-G cobalt sourcing declaration has been awaiting your response for 12 days. Delay risks OEM compliance deadline. Review the request in Agent Dashboard.' },
+    suggestions:['What data is my OEM requesting?','What is missing on LCO-G?','What is Art. 48 due diligence?','Explain Art. 7 carbon footprint']
+  },
+  regulator: {
+    cls:'regulator', icon:'fa-scale-balanced',
+    text:'<strong>Market Surveillance View:</strong> All product data is timestamped, versioned, and audit-logged. Full traceability to source data and supplier declarations is maintained per EU 2023/1542.',
+    stats:[
+      { icon:'fa-globe',              cls:'green',  val:'10', label:'Passports Accessible' },
+      { icon:'fa-qrcode',             cls:'purple', val:'11', label:'QR Codes Registered' },
+      { icon:'fa-shield-halved',      cls:'green',  val:'9',  label:'CE Declarations Linked' },
+      { icon:'fa-circle-xmark',       cls:'red',    val:'1',  label:'Non-Compliant Product' }
+    ],
+    alert: { type:'danger', icon:'fa-scale-balanced', text:'<strong>Non-compliant product:</strong> LCO-G (GTIN 04012345000003) is missing 3 mandatory Supply Chain Due Diligence declarations under Art. 48. This product cannot be legally placed on the EU market without remediation.' },
+    suggestions:['Is NMC811 ready for 2027?','Explain Art. 48 due diligence','What is Art. 77 QR code requirement?','Explain Art. 7 carbon footprint']
+  },
+  sustainability: {
+    cls:'sustainability', icon:'fa-leaf',
+    text:'<strong>Sustainability Officer View:</strong> Carbon footprint performance, circularity metrics, and supply chain due diligence across the full battery portfolio.',
+    stats:[
+      { icon:'fa-cloud',    cls:'purple', val:'31',   label:'Avg CF (kgCO₂e/kWh)' },
+      { icon:'fa-recycle',  cls:'green',  val:'16%',  label:'Avg Recycled Cobalt' },
+      { icon:'fa-leaf',     cls:'green',  val:'5%',   label:'Avg Recycled Lithium' },
+      { icon:'fa-link',     cls:'gold',   val:'9/11', label:'Supply Chain Declared' }
+    ],
+    alert: { type:'success', icon:'fa-leaf', text:'<strong>Circularity highlight:</strong> NMC811 has 18% recycled cobalt content — exceeding the 2028 minimum threshold of 12%. Consider highlighting this as a sustainability differentiator in product documentation and procurement communications.' },
+    suggestions:['What is required in 2028?','Explain Art. 7 carbon footprint','What is missing on LCO-G?','Is NMC811 ready for 2027?']
+  }
+};
+
+function switchPersona(val) {
+  const cfg = PERSONAS[val];
+
+  // Banner
+  const b = document.getElementById('persona-banner-portfolio');
+  if(b) { b.className='persona-banner '+cfg.cls; b.innerHTML=`<i class="fa-solid ${cfg.icon}"></i><span>${cfg.text}</span>`; }
+
+  // Stat cards
+  const sg = document.getElementById('stat-grid-portfolio');
+  if(sg && cfg.stats) {
+    sg.innerHTML = cfg.stats.map(s=>`
+      <div class="stat-card">
+        <div class="stat-icon ${s.cls}"><i class="fa-solid ${s.icon}"></i></div>
+        <div><div class="stat-value">${s.val}</div><div class="stat-label">${s.label}</div></div>
+      </div>`).join('');
+  }
+
+  // Persona alert
+  const pa = document.getElementById('persona-alert');
+  if(pa && cfg.alert) {
+    pa.className=`alert ${cfg.alert.type}`;
+    pa.innerHTML=`<i class="fa-solid ${cfg.alert.icon}"></i><span>${cfg.alert.text}</span>`;
+  }
+
+  // Chatbot suggestions
+  const cs = document.getElementById('chatSuggestions');
+  if(cs && cfg.suggestions) {
+    cs.innerHTML = cfg.suggestions.map(s=>`<span class="chat-sug" onclick="sendSug(this)">${s}</span>`).join('');
+  }
+}
+
+// ── PRODUCT DATA ─────────────────────────────────────────────────
+const PRODUCTS = {
+  NMC811: {
+    name:'NMC811', type:'PHEV Battery · Li-NMC', sn:'SN-DEMO-001', gtin:'04012345000000',
+    score:91, updated:'14 August 2025',
+    summary:'The <strong>NMC811</strong> battery achieves <strong>91% compliance readiness</strong> for the February 2027 Battery Passport deadline under EU 2023/1542. All mandatory Carbon Footprint, Materials, and Performance attributes are covered. Performance class is <strong>Class C</strong> (31 kgCO₂e/kWh). Supply chain due diligence for cobalt and lithium is fully declared with OECD certification. No blocking gaps identified before 2027.',
+    cats:[
+      { icon:'fa-cloud', name:'Battery Carbon Footprint', status:'compliant', attrs:[
+        { name:'Absolute Battery Carbon Footprint', value:'1 tCO₂e', ref:'Art. 7, Annex II — EU 2023/1542', desc:'Total lifecycle greenhouse gas emissions independent of functional unit scaling.', tip:'Article 7 mandates this value from February 2024 for industrial batteries. Your value of 1 tCO₂e is within the expected range for NMC PHEV batteries. A performance class declaration (A–F) must accompany this value from 2026.' },
+        { name:'Carbon Footprint per Functional Unit', value:'31.0 kgCO₂e/kWh', ref:'Art. 7(1)(a)', desc:'Total lifecycle greenhouse gas emissions per unit of delivered energy.', tip:'At 31 kgCO₂e/kWh, this battery falls in Performance Class C under the draft classification thresholds. Class B threshold is ≤25 kgCO₂e/kWh — reaching it would require supply chain decarbonisation. Consider flagging for the next product generation roadmap.' },
+        { name:'Carbon Footprint Performance Class', value:'Class C', ref:'Art. 7(1)(b)', desc:'Comparative performance rating A (best) to F (lowest) as mandated for label disclosure.', tip:'Performance class will be publicly visible on the battery label from 2026. Class C is acceptable for market placement but may be disadvantageous in procurement tenders specifying Class A or B.' }
+      ]},
+      { icon:'fa-flask', name:'Battery Materials and Composition', status:'compliant', attrs:[
+        { name:'Active Cathode Material', value:'NMC 811', ref:'Annex XIII — EU 2023/1542', desc:'Chemical identifier of the cathode active material.', tip:'NMC 811 (LiNi₀.₈Mn₀.₁Co₀.₁O₂) must be declared to enable end-of-life sorting and material recovery. This is a mandatory attribute under Annex XIII from February 2027.' },
+        { name:'Hazardous Substances', value:'Cobalt &lt;0.1%', ref:'Art. 13(4)', desc:'Substances of concern present in the battery composition above declaration thresholds.', tip:'Cobalt content below 0.1% meets the labelling exemption threshold under REACH Annex XVII. Full substance declaration is required if the threshold is exceeded.' },
+        { name:'Critical Raw Materials', value:'Li, Co, Ni, Mn', ref:'EU CRM Regulation 2024/1252', desc:'EU-listed critical raw materials identified in this battery.', tip:'All four materials appear on the EU Critical Raw Materials list. Responsible sourcing declarations under Art. 48 are required for cobalt and lithium from February 2027.' }
+      ]},
+      { icon:'fa-recycle', name:'Circularity and Resource Efficiency', status:'compliant', attrs:[
+        { name:'Recycled Content — Cobalt', value:'18%', ref:'Art. 8, Annex X', desc:'Share of cobalt derived from recycled post-consumer sources.', tip:'18% exceeds the 2028 minimum of 12% (Art. 8.4). This is a competitive advantage — consider highlighting in product and procurement documentation.' },
+        { name:'Recycled Content — Lithium', value:'6%', ref:'Art. 8, Annex X', desc:'Share of lithium derived from recycled post-consumer sources.', tip:'6% exceeds the 2028 minimum threshold of 4%. From 2030 the threshold rises to 10% — plan recycled content sourcing strategy now.' },
+        { name:'Recycled Content — Nickel', value:'5%', ref:'Art. 8, Annex X', desc:'Share of nickel derived from recycled post-consumer sources.', tip:'5% exceeds the 2028 minimum of 4%. The 2030 threshold is 12% — a significant gap to address in supply chain strategy over the next four years.' }
+      ]},
+      { icon:'fa-tag', name:'Identifiers and Product Data', status:'compliant', attrs:[
+        { name:'Unique Battery Identifier', value:'BAT-NMC811-001', ref:'Art. 77 — EU 2023/1542', desc:'Unique identifier linking the physical battery to its digital passport.', tip:'This identifier must be physically marked on the battery (QR code or data matrix) and registered in the EU Battery Passport registry from February 2027. Ensure QR code durability meets IEC 15459 standards.' },
+        { name:'Battery Model', value:'NMC811 PHEV', ref:'Annex XIII', desc:'Commercial model identifier for the battery product.', tip:'Model identifiers must be consistent across all DPP instances of the same model to enable supply chain traceability and market surveillance.' }
+      ]},
+      { icon:'fa-bolt', name:'Performance and Durability', status:'compliant', attrs:[
+        { name:'Rated Capacity', value:'32 Ah', ref:'Art. 10, Annex IV', desc:'Nominal rated capacity in ampere-hours under reference conditions.', tip:'Rated capacity enables direct product comparison and is referenced in end-user documentation requirements under Art. 10. Must be measured under standardised test conditions.' },
+        { name:'Expected Battery Lifetime', value:'10 years / 1,500 cycles', ref:'Art. 10(1)(a)', desc:'Designed operational lifetime under reference conditions.', tip:'Lifetime declaration supports durability scoring under ESPR. From 2026, durability is a mandatory ecodesign criterion. Consider commissioning accelerated ageing tests to strengthen the evidential basis for this declaration.' }
+      ]},
+      { icon:'fa-link', name:'Supply Chain Due Diligence', status:'compliant', attrs:[
+        { name:'Cobalt Sourcing Declaration', value:'DRC — certified OECD', ref:'Art. 48 — EU 2023/1542', desc:'Origin and responsible sourcing certification for cobalt used in this battery.', tip:'OECD Due Diligence Guidance certification from DRC-sourced cobalt is the accepted standard under Art. 48. Ensure the certification is renewed annually and the certificate reference number is embedded in the DPP record.' },
+        { name:'Lithium Sourcing Origin', value:'Chile, Australia', ref:'Art. 48', desc:'Countries of extraction for lithium used in this battery.', tip:'Multi-origin sourcing reduces supply chain concentration risk. Both Chile and Australia are OECD members with established mining governance frameworks accepted under EU Art. 48 requirements.' }
+      ]},
+      { icon:'fa-file-shield', name:'Symbols, Labels, and Documentation of Conformity', status:'compliant', attrs:[
+        { name:'CE Declaration of Conformity', value:'Available', ref:'Art. 18 — EU 2023/1542', desc:'Declaration confirming conformity with all applicable EU requirements.', tip:'The CE declaration must reference all applicable regulations (Battery Regulation plus Machinery Directive if applicable). It must be linked within the DPP and accessible without registration from February 2027.' },
+        { name:'Battery Label Compliance', value:'Compliant — IEC 62133', ref:'Art. 13', desc:'Physical label meeting Annex VI requirements for capacity, chemistry, and disposal instructions.', tip:'Label must include: capacity (Wh), chemistry symbol, recycling symbol, crossed-out wheeled bin, and QR code linking to the DPP. Digital label equivalence under ESPR is permitted as of 2025.' }
+      ]}
+    ]
+  },
+  NMC622: { name:'NMC622-G', type:'PHEV Battery · Li-NMC', sn:'SN-DEMO-002', gtin:'04012345000001', score:85, updated:'14 August 2025', summary:'The <strong>NMC622-G</strong> achieves <strong>85% readiness</strong> for February 2027. Core attributes are covered. Minor gaps in circularity declarations require attention before Q4 2026.' },
+  NMC955: { name:'NMC955-G', type:'PHEV Battery · Li-NMC', sn:'SN-DEMO-003', gtin:'04012345000002', score:78, updated:'14 August 2025', summary:'The <strong>NMC955-G</strong> is at <strong>78% readiness</strong>. Two Circularity attributes (recycled nickel content, threshold declaration) require data from the supply chain before February 2027.' },
+  LCO:    { name:'LCO-G',    type:'PHEV Battery · Li-Co',  sn:'SN-DEMO-004', gtin:'04012345000003', score:62, updated:'14 August 2025', summary:'The <strong>LCO-G</strong> is at <strong>62% readiness</strong> and has blocking gaps. Three Supply Chain Due Diligence declarations are outstanding. The Data Completeness Agent has flagged one supplier as overdue. Immediate action required.' }
+};
+
+function showProductDetail(key) {
+  const p = PRODUCTS[key];
+  if(!p) return;
+  const scoreColor = p.score>=85?'var(--compliant)':p.score>=70?'var(--partial)':'var(--missing)';
+  const r = 50, circ = 2*Math.PI*r;
+  const offset = circ*(1 - p.score/100);
+
+  let html = `<div class="page-header">
+    <div class="breadcrumb"><span class="bc-link" onclick="showPage(&apos;portfolio&apos;)">Portfolio</span><i class="fa-solid fa-chevron-right"></i> ${p.name}</div>
+    <h1>${p.name} <span style="font-size:15px;font-weight:500;color:var(--ss-mid)">— ${p.type}</span></h1>
+    <p>GTIN: ${p.gtin} &nbsp;·&nbsp; Serial: ${p.sn} &nbsp;·&nbsp; Last updated: ${p.updated}</p>
+  </div>`;
+
+  html += `<div class="exec-summary">
+    <span class="exec-ai-badge"><i class="fa-solid fa-robot"></i> AI SUMMARY</span>
+    <div class="exec-text">${p.summary}</div>
+  </div>`;
+
+  if(p.cats) {
+    html += `<div class="product-header-card">
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center">
+        <svg width="140" height="140" viewBox="0 0 140 140">
+          <circle cx="70" cy="70" r="${r}" fill="none" stroke="#EBEBF0" stroke-width="14"/>
+          <circle cx="70" cy="70" r="${r}" fill="none" stroke="${scoreColor}" stroke-width="14"
+            stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"
+            stroke-linecap="round" transform="rotate(-90 70 70)"/>
+          <text x="70" y="64" text-anchor="middle" font-size="24" font-weight="800" fill="${scoreColor.replace('var(--','').replace(')','')}">${p.score}%</text>
+          <text x="70" y="80" text-anchor="middle" font-size="10" fill="#6B6B80">2027 Ready</text>
+        </svg>
+        <div style="font-size:11px;color:var(--ss-mid);text-align:center;margin-top:6px;line-height:1.5">Battery Passport<br>Readiness Score</div>
+      </div>
+      <div>
+        <div style="font-weight:700;font-size:14px;margin-bottom:14px;color:var(--ss-dark)">Category Readiness</div>
+        ${p.cats.map(c=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <i class="fa-solid ${c.icon}" style="color:var(--ss-purple-deep);width:16px;text-align:center;font-size:13px"></i>
+          <span style="flex:1;font-size:13px;color:var(--ss-dark)">${c.name}</span>
+          <span class="badge ${c.status}"><i class="fa-solid ${c.status==='compliant'?'fa-circle-check':'fa-circle-half-stroke'}"></i> ${c.status==='compliant'?'Compliant':'Partial'}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+
+    p.cats.forEach((cat,ci)=>{
+      html += `<div class="cat-accordion" id="cat-${ci}">
+        <div class="cat-header" onclick="toggleCat(${ci})">
+          <div class="cat-header-left">
+            <div class="cat-icon"><i class="fa-solid ${cat.icon}"></i></div>
+            <div>
+              <div class="cat-name">${cat.name}</div>
+              <div class="cat-count">${cat.attrs.length} attributes</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span class="badge ${cat.status}"><i class="fa-solid ${cat.status==='compliant'?'fa-circle-check':'fa-circle-half-stroke'}"></i> ${cat.status==='compliant'?'Compliant':'Partial'}</span>
+            <i class="fa-solid fa-chevron-down cat-chevron"></i>
+          </div>
+        </div>
+        <div class="cat-body" id="cat-body-${ci}">
+          ${cat.attrs.map(a=>`<div class="attr-row">
+            <div class="attr-left">
+              <div class="attr-name">${a.name}</div>
+              <div class="attr-desc">${a.desc}</div>
+              <div class="attr-reg"><i class="fa-solid fa-book-open"></i> ${a.ref}</div>
+              <div class="ai-tip">
+                <div class="ai-tip-label"><i class="fa-solid fa-robot"></i> AI Regulatory Insight</div>
+                <div class="ai-tip-text">${a.tip}</div>
+              </div>
+            </div>
+            <div class="attr-right">
+              <div class="attr-value">${a.value}</div>
+              <span class="badge compliant" style="margin-top:4px"><i class="fa-solid fa-circle-check"></i> Compliant</span>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>`;
+    });
+  } else {
+    html += `<div class="card"><p style="color:var(--ss-mid)">Full attribute data available on request. Readiness score: ${p.score}%</p></div>`;
+  }
+
+  document.getElementById('product-content').innerHTML = html;
+  showPage('product');
+  setTimeout(()=>toggleCat(0), 80);
+}
+
+function toggleCat(i) {
+  const h = document.querySelector(`#cat-${i} .cat-header`);
+  const b = document.getElementById(`cat-body-${i}`);
+  if(!h||!b) return;
+  const isOpen = h.classList.contains('open');
+  h.classList.toggle('open', !isOpen);
+  b.classList.toggle('open', !isOpen);
+}
+function scrollToCat(i) {
+  const el = document.getElementById(`cat-${i}`);
+  if(el) { el.scrollIntoView({behavior:'smooth', block:'start'}); toggleCat(i); }
+}
+
+// ── CHAT ──────────────────────────────────────────────────────────
+const RESPONSES = {
+  'is nmc811 ready for 2027': 'The <strong>NMC811</strong> battery is <strong>91% ready</strong> for the February 2027 Battery Passport deadline under EU 2023/1542.<br><br><strong>Covered:</strong> All 7 mandatory categories, carbon footprint declaration (Class C, 31 kgCO₂e/kWh), cobalt and lithium sourcing OECD-certified, CE declaration of conformity in place.<br><br><strong>Advisory item:</strong> State of Health disclosure becomes mandatory under a forthcoming delegated act (expected 2026–2027). No blocking gaps exist before the 2027 deadline.',
+  'what is missing on lco-g': 'The <strong>LCO-G</strong> battery is at <strong>62% readiness</strong> with blocking gaps before February 2027:<br><br><strong>Missing — Supply Chain Due Diligence (Art. 48):</strong><br>· Cobalt sourcing certification — upstream supplier data pending<br>· Lithium origin declaration — Supplier A response overdue by 12 days<br>· Third-party audit report for DRC-sourced materials<br><br>These are blocking requirements. The Data Completeness Agent has drafted supplier escalation notices — approve in the Agent Dashboard to proceed.',
+  'what is required in 2028': 'From <strong>2028</strong>, Art. 8.4 of EU 2023/1542 introduces mandatory recycled content minimum thresholds:<br><br>· Cobalt ≥ 12% recycled content<br>· Lithium ≥ 4% recycled content<br>· Nickel ≥ 4% recycled content<br><br>Your Circularity category already tracks these values (NMC811: Co 18%, Li 6%, Ni 5%). The implementation reduces to adding <strong>threshold validation rules</strong> and a formal <strong>declaration mechanism</strong>. The Attribute Lifecycle Manager can draft the required attribute extensions.',
+  'explain art. 7 carbon footprint': '<strong>Article 7 — EU 2023/1542</strong> mandates a carbon footprint declaration for industrial and EV batteries.<br><br><strong>Required declarations:</strong><br>· Absolute carbon footprint (tCO₂e) — full lifecycle total<br>· Carbon footprint per kWh (functional unit)<br>· Performance class (A to F) — publicly visible on label<br>· Methodology reference (ISO 14067 or EU PEF method)<br><br><strong>Timeline:</strong> Mandatory from February 2024 (declared value). Performance class labelling required from 2025–2026 depending on battery category.<br><br>Your NMC811 declares 31 kgCO₂e/kWh = <strong>Class C</strong>. Class B threshold is ≤25 kgCO₂e/kWh.'
+};
+
+function toggleChat() { document.getElementById('chatPanel').classList.toggle('open'); }
+function sendSug(el) { const t=el.textContent; el.remove(); addMsg(t,'user'); setTimeout(()=>respondToChat(t),650); }
+function sendChat() { const inp=document.getElementById('chatInput'); const t=inp.value.trim(); if(!t)return; addMsg(t,'user'); inp.value=''; setTimeout(()=>respondToChat(t),650); }
+function addMsg(text,role) {
+  const msgs=document.getElementById('chatMessages');
+  const d=document.createElement('div'); d.className='msg '+role; d.innerHTML=text;
+  msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
+}
+function respondToChat(text) {
+  const key=text.toLowerCase().replace(/[?!]/g,'').trim();
+  let resp=RESPONSES[key];
+  if(!resp) { for(const k in RESPONSES) { if(k.split(' ').some(w=>w.length>4&&key.includes(w))) { resp=RESPONSES[k]; break; }}}
+  if(!resp) resp='I can assist with compliance status, attribute gap analysis, regulatory explanations, and upcoming obligations under EU 2023/1542 and ESPR. Please specify a battery model or regulation article.';
+  addMsg(resp,'ai');
+}
+
+// ── AGENTS ────────────────────────────────────────────────────────
+function runAgent(n) {
+  const log=document.getElementById(`agent${n}-log`);
+  if(!log)return;
+  const sequences=[
+    ['Initialising regulatory scan...','Connecting to EUR-Lex data source...','Comparing against 113 existing attributes...','<span class="log-ok">[DONE]</span> Delta report generated — 14 proposals pending review'],
+    ['Scanning product attribute catalog...','Evaluating completeness across 11 products...','<span class="log-warn">[OVERDUE]</span> Supplier A — no response in 12 days','<span class="log-ok">[DONE]</span> Escalation draft ready — pending approval'],
+    ['Reading uploaded regulatory document...','Extracting data requirements...','Mapping to existing catalog...','<span class="log-ok">[DONE]</span> Draft attribute set ready — pending review'],
+    [`Fetching data for ${document.getElementById('auditProduct')?.value||'NMC811'}...`,'Cross-referencing EU 2023/1542 requirements...','Generating regulation-cited documentation...','<span class="log-ok">[DONE]</span> Audit package complete — 14 pages, PDF']
+  ];
+  log.innerHTML='';
+  sequences[n-1].forEach((s,i)=>{ setTimeout(()=>{ log.innerHTML+=`[${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}] ${s}<br>`; log.scrollTop=log.scrollHeight; }, i*750); });
+  showToast('Agent running — results will appear shortly');
+}
+function agentApprove(n) {
+  showToast(n===1?'14 attribute proposals submitted to Attribute Engine for governance review':'Escalation approved — supplier notification queued');
+}
+
+initMerge(); // direct call — script is at bottom of body, DOM is ready
+
+// ── MODALS ────────────────────────────────────────────────────────
+function openModal(id) { document.getElementById(id)?.classList.add('open'); }
+function closeModal(id) { document.getElementById(id)?.classList.remove('open'); }
+document.addEventListener('keydown', e => { if(e.key==='Escape') document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open')); });
+
+// ── GUIDED TOUR ───────────────────────────────────────────────────
+const TOUR_STEPS = [
+  {
+    page: 'portfolio', el: null,
+    title: 'Welcome to the DPP Platform',
+    text: 'This is the Battery DPP Portfolio — your starting point for every client demo. It shows all battery products and their compliance readiness for the EU Battery Passport deadline of 18 February 2027.'
+  },
+  {
+    page: 'portfolio', el: '#personaSelect',
+    title: 'Persona Switcher',
+    text: 'Before each meeting, switch the persona to match your audience. The platform immediately reframes its context: OEM priorities for a manufacturer, audit traceability for a regulator, circularity metrics for a sustainability officer.'
+  },
+  {
+    page: 'portfolio', el: '.data-table',
+    title: 'Readiness Scores',
+    text: 'Each product shows its compliance readiness score as a progress bar. Green is compliant, amber has minor gaps, red has blocking issues. Click any row to open the full Digital Product Passport for that battery.'
+  },
+  {
+    page: 'product:NMC811', el: '.exec-summary',
+    title: 'Product DPP — AI Executive Summary',
+    text: 'This is the full Digital Product Passport for the NMC811 battery. At the top, the AI generates a plain-language executive summary of the compliance position — ready to read out in a boardroom without further preparation.'
+  },
+  {
+    page: null, el: '#cat-0',
+    title: 'Regulatory Category Accordions',
+    text: 'All 7 regulatory categories from EU 2023/1542 are shown as expandable sections. Each attribute shows its value, the exact regulation article it comes from, and an AI insight explaining why it is required by law and whether the current value meets expectations.'
+  },
+  {
+    page: 'cockpit', el: null,
+    title: 'Compliance Cockpit',
+    text: 'The Compliance Cockpit gives a diagnostic view of gaps. The AI has already prioritised the three actions your team needs to take before February 2027. Useful for turning a general conversation into a specific action plan with the client.'
+  },
+  {
+    page: 'radar', el: '.timeline',
+    title: 'Regulatory Radar — EU Timeline',
+    text: 'This timeline maps every EU regulatory milestone from 2023 to 2030. The gold dot is today. Show the client exactly where they stand at each checkpoint and what obligations are coming in 2027 and 2028.'
+  },
+  {
+    page: 'agents', el: '.agent-grid',
+    title: 'Agent Dashboard — AI Automation',
+    text: 'Four AI agents automate the most time-consuming compliance tasks: monitoring new EU regulations, chasing missing supplier data, managing attribute lifecycles, and preparing audit packages. Every action requires human approval — no autonomous changes.'
+  },
+  {
+    page: null, el: '#agent1-log',
+    title: 'Run an Agent Live',
+    text: 'Click "Run Now" on the Regulatory Monitor card during the demo. The log updates line by line in real time as the agent scans the EU Official Journal. This step typically generates the strongest reaction from technical audiences.'
+  },
+  {
+    page: 'merge', el: '.merge-step',
+    title: 'Merge DPPs',
+    text: 'When two batteries are assembled into a combined system, EU law requires a new merged DPP. This wizard selects both products, compares all attributes, resolves conflicts automatically using regulation-defined rules, and generates the merged passport.'
+  },
+  {
+    page: 'guide', el: '#guide-assess',
+    title: 'Compliance Self-Assessment',
+    text: 'This checklist lets a client score their own readiness in real time during the meeting. 20 items across 4 regulatory groups. The score ring updates as they check each item — from Not Started to Passport Ready. It is a powerful discovery tool.',
+    last: true
+  }
+];
+
+let _tourIdx = 0;
+let _tourEl  = null;
+
+function startTour() {
+  _tourIdx = 0;
+  document.getElementById('tourBar').classList.add('active');
+  _renderTour();
+}
+
+function endTour() {
+  document.getElementById('tourBar').classList.remove('active');
+  _clearHighlight();
+}
+
+function tourMove(dir) {
+  _clearHighlight();
+  _tourIdx = Math.max(0, Math.min(TOUR_STEPS.length - 1, _tourIdx + dir));
+  _renderTour();
+}
+
+function _renderTour() {
+  const s = TOUR_STEPS[_tourIdx];
+  const total = TOUR_STEPS.length;
+
+  document.getElementById('tourLabel').textContent = `Step ${_tourIdx + 1} of ${total}`;
+  document.getElementById('tourFill').style.width = ((_tourIdx + 1) / total * 100) + '%';
+  document.getElementById('tourTitle').textContent = s.title;
+  document.getElementById('tourText').textContent  = s.text;
+
+  // Prev button
+  const prev = document.getElementById('tourPrev');
+  prev.style.visibility = _tourIdx === 0 ? 'hidden' : 'visible';
+
+  // Next / Finish button
+  const next = document.getElementById('tourNext');
+  if (s.last) {
+    next.innerHTML = '<i class="fa-solid fa-check"></i> Finish';
+    next.className = 'tour-btn t-finish';
+    next.onclick = endTour;
+  } else {
+    next.innerHTML = 'Next <i class="fa-solid fa-chevron-right"></i>';
+    next.className = 'tour-btn t-next';
+    next.onclick = () => tourMove(1);
+  }
+
+  // Navigate to correct page
+  if (s.page && s.page.startsWith('product:')) {
+    showProductDetail(s.page.split(':')[1]);
+  } else if (s.page) {
+    showPage(s.page);
+  }
+
+  // Highlight target element after navigation settles
+  if (s.el) {
+    setTimeout(() => {
+      const el = document.querySelector(s.el);
+      if (el) {
+        el.classList.add('tour-highlight');
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        _tourEl = el;
+      }
+    }, 380);
+  }
+}
+
+function _clearHighlight() {
+  if (_tourEl) { _tourEl.classList.remove('tour-highlight'); _tourEl = null; }
+  document.querySelectorAll('.tour-highlight').forEach(e => e.classList.remove('tour-highlight'));
+}
+
+function downloadGapRegister() {
+  var rows = [
+    ['Category','Attribute','Status','Regulatory Basis','Deadline','Priority'],
+    ['Carbon Footprint','Absolute Battery Carbon Footprint','Covered','Art. 7, Annex II — EU 2023/1542','Feb 2027','Low'],
+    ['Carbon Footprint','Carbon Footprint Performance Class','Covered','Art. 7(1)(b)','Feb 2027','Low'],
+    ['Circularity','Recycled Content — Cobalt','Partial','Art. 8, Annex X','Feb 2027','High'],
+    ['Circularity','Recycled Content — Nickel','Missing','Art. 8, Annex X','Feb 2027','High'],
+    ['Supply Chain','Responsible Sourcing — Lithium','Covered','Art. 48','Feb 2027','Low'],
+    ['Performance','Rated Capacity (Ah)','Covered','Art. 10, Annex IV','Feb 2027','Low'],
+    ['Performance','State of Health Disclosure','Future requirement','Art. 14 — delegated act','2026-2027','Medium'],
+    ['Circularity','Recycled Content Threshold Declaration','Future requirement','Art. 8(4)','2028','Medium']
+  ];
+  var csv = rows.map(function(r){ return r.map(function(c){ return '"'+c+'"'; }).join(','); }).join('\n');
+  var header = 'Product: NMC955-G | Regulation: EU 2023/1542 | Generated: ' + new Date().toLocaleDateString('en-GB') + '\n\n';
+  var blob = new Blob([header + csv], {type:'text/csv'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'NMC955-G_Gap-Register.csv';
+  a.click();
+  showToast('Gap Register exported — NMC955-G_Gap-Register.csv');
+}
+
+// ── TOAST ───────────────────────────────────────────────────────
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.innerHTML=`<i class="fa-solid fa-circle-check"></i> ${msg}`;
+  t.style.transform='translateX(-50%) translateY(0)';
+  setTimeout(()=>{ t.style.transform='translateX(-50%) translateY(80px)'; },3200);
+}
+
+// ── MERGED PRODUCT DETAIL ─────────────────────────────────────────
+function showMergedProductDetail(id) {
+  var m = window._mergedProducts[id];
+  if(!m) { showToast('Merged product data not found — please recreate the merge'); return; }
+
+  var score = m.score;
+  var scoreColor = score>=85?'#1A9B5F':score>=70?'#D97706':'#C0392B';
+  var r = 50, circ = 2*Math.PI*r;
+  var offset = circ*(1-score/100);
+
+  var sourceRows = m.prods.map(function(p){
+    var sc = p.score>=85?'var(--compliant)':p.score>=70?'var(--partial)':'var(--missing)';
+    return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--ss-border)">'
+      + '<div style="font-weight:700;font-size:13px;color:var(--ss-purple-deep);min-width:90px">'+p.label+'</div>'
+      + '<div style="font-size:12px;color:var(--ss-mid);flex:1">'+p.chem+' &nbsp;·&nbsp; '+p.cap+' Ah &nbsp;·&nbsp; '+p.cf+' tCO₂e</div>'
+      + '<div class="score-bar-wrap" style="min-width:120px"><div class="score-bar-bg"><div class="score-bar-fill" style="width:'+p.score+'%;background:'+sc+'"></div></div><span class="score-num" style="color:'+sc+'">'+p.score+'%</span></div>'
+      + '</div>';
+  }).join('');
+
+  var html = '<div class="page-header">'
+    + '<div class="breadcrumb"><span class="bc-link" onclick="showPage(&apos;portfolio&apos;)">Portfolio</span>'
+    + '<i class="fa-solid fa-chevron-right"></i> Merged DPP</div>'
+    + '<h1 style="font-size:18px">'+m.idNew+'</h1>'
+    + '<p>'+m.typeLabel+' &nbsp;·&nbsp; '+m.prods.length+' source products &nbsp;·&nbsp; Created: '+m.today+'</p>'
+    + '</div>'
+
+    + '<div class="exec-summary">'
+    + '<span class="exec-ai-badge"><i class="fa-solid fa-robot"></i> AI SUMMARY</span>'
+    + '<div class="exec-text">This merged passport consolidates <strong>'+m.prods.length+' source batteries</strong> ('
+    + m.prods.map(function(p){return '<strong>'+p.label+'</strong>';}).join(', ')
+    + ') into a single <strong>'+m.typeLabel+'</strong>. '
+    + 'The combined system has a total rated capacity of <strong>'+m.totalCap+' Ah</strong> and a carbon footprint of '
+    + '<strong>'+m.totalCF.toFixed(2)+' tCO₂e</strong> ('+(m.cfkwhM.toFixed(1))+' kgCO₂e/kWh weighted average). '
+    + 'Performance class is <strong>Class '+m.clsM+'</strong>, assigned conservatively from the lowest-rated source. '
+    + (m.chemConflict ? '<strong style="color:var(--missing)">Active Cathode Material conflict detected — manual specification required before this DPP can be submitted.</strong>' : 'All chemistries are compatible — no conflicts detected.')
+    + '</div></div>'
+
+    + '<div style="display:grid;grid-template-columns:180px 1fr;gap:20px;margin-bottom:24px">'
+    + '<div class="card" style="margin-bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px">'
+    + '<svg width="140" height="140" viewBox="0 0 140 140">'
+    + '<circle cx="70" cy="70" r="50" fill="none" stroke="#EBEBF0" stroke-width="14"/>'
+    + '<circle cx="70" cy="70" r="50" fill="none" stroke="'+scoreColor+'" stroke-width="14"'
+    + ' stroke-dasharray="'+circ.toFixed(1)+'" stroke-dashoffset="'+offset.toFixed(1)+'"'
+    + ' stroke-linecap="round" transform="rotate(-90 70 70)"/>'
+    + '<text x="70" y="64" text-anchor="middle" font-size="24" font-weight="800" fill="'+scoreColor+'">'+score+'%</text>'
+    + '<text x="70" y="80" text-anchor="middle" font-size="10" fill="#6B6B80">2027 Ready</text>'
+    + '</svg>'
+    + '<div style="font-size:11px;color:var(--ss-mid);text-align:center;margin-top:8px;line-height:1.5">Merged DPP<br>Readiness Score</div>'
+    + '</div>'
+
+    + '<div class="card" style="margin-bottom:0">'
+    + '<div class="card-title" style="margin-bottom:16px">Merged Attribute Values</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+    + '<div class="preview-item"><div class="preview-item-label">Total Rated Capacity</div><div class="preview-item-value">'+m.totalCap+' Ah</div></div>'
+    + '<div class="preview-item"><div class="preview-item-label">Combined Carbon Footprint</div><div class="preview-item-value">'+m.totalCF.toFixed(2)+' tCO₂e</div></div>'
+    + '<div class="preview-item"><div class="preview-item-label">CF per kWh (weighted)</div><div class="preview-item-value">'+m.cfkwhM.toFixed(1)+' kgCO₂e/kWh</div></div>'
+    + '<div class="preview-item"><div class="preview-item-label">Performance Class</div><div class="preview-item-value">Class '+m.clsM+'</div></div>'
+    + '<div class="preview-item"><div class="preview-item-label">Recycled Cobalt (weighted)</div><div class="preview-item-value">'+m.coCo.toFixed(1)+'%</div></div>'
+    + '<div class="preview-item"><div class="preview-item-label">Recycled Lithium (weighted)</div><div class="preview-item-value">'+m.coLi.toFixed(1)+'%</div></div>'
+    + '</div></div></div>'
+
+    + '<div class="card">'
+    + '<div class="card-title" style="margin-bottom:4px">Source Products</div>'
+    + '<div class="card-subtitle" style="margin-bottom:14px">All '+m.prods.length+' batteries contributing to this merged passport</div>'
+    + sourceRows
+    + '</div>'
+
+    + (m.chemConflict
+      ? '<div class="alert danger"><i class="fa-solid fa-triangle-exclamation"></i><span><strong>Action required:</strong> Source products have different active cathode materials ('+m.chems+'). You must specify the combined material declaration manually before this merged DPP can be submitted to the EU registry.</span></div>'
+      : '<div class="alert success"><i class="fa-solid fa-circle-check"></i><span>No attribute conflicts detected. This merged DPP is ready for submission once the unique battery identifier is physically applied to the combined system housing.</span></div>');
+
+  document.getElementById('product-content').innerHTML = html;
+  showPage('product');
+}
+</script>
+</body>
+</html>
