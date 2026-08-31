@@ -1,7 +1,5 @@
 # AI-Powered Digital Product Passport Platform Demo
 
-**Sopra Steria · Industrial & Manufacturing Practice**
-
 A consulting-grade, browser-based demonstration of an AI-powered Digital Product Passport (DPP) platform for the battery and OEM sector, built ahead of the EU Battery Regulation deadline of **18 February 2027**.
 
 ---
@@ -50,7 +48,7 @@ open dpp-demo.html   # macOS
 | File | Description |
 |---|---|
 | `dpp-demo.html` | The full interactive demo — single self-contained HTML file |
-| `SOPRASTERIA_logo_RVB_blanc_exe.png` | Sopra Steria logo — must stay alongside the HTML |
+| `SOPRASTERIA_logo_RVB_blanc_exe.png` | Logo image — must stay alongside the HTML |
 | `DPP-Demo-UserGuide.md` | Presenter guide with demo narrative and walkthrough |
 
 ---
@@ -93,4 +91,4 @@ Before presenting, update these elements in `dpp-demo.html` (clearly labelled in
 
 ---
 
-*Internal use — Sopra Steria. C2 — Usage restreint.*
+*Internal use only.*
