@@ -1,5 +1,5 @@
 # DPP Platform Demo — User Guide
-**Sopra Steria · Consulting-Grade Demo · June 2026**
+**Consulting-Grade Demo · June 2026**
 
 ---
 
@@ -213,4 +213,4 @@ All of this requires editing the HTML file in a text editor. The relevant sectio
 
 ---
 
-*This document is for internal Sopra Steria use. C2 — Usage restreint.*
+*Internal use only.*
