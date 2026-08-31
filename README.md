@@ -30,7 +30,6 @@ This demo simulates a production DPP platform built on top of a Data Hub, featur
 
 1. Clone this repository
 2. Open `dpp-demo.html` in any modern browser (Chrome, Edge, Firefox, Safari)
-3. The logo file `SOPRASTERIA_logo_RVB_blanc_exe.png` must be in the **same folder** as the HTML file
 
 No internet connection, server, or installation required. The demo is fully self-contained.
 
@@ -48,7 +47,6 @@ open dpp-demo.html   # macOS
 | File | Description |
 |---|---|
 | `dpp-demo.html` | The full interactive demo — single self-contained HTML file |
-| `SOPRASTERIA_logo_RVB_blanc_exe.png` | Logo image — must stay alongside the HTML |
 | `DPP-Demo-UserGuide.md` | Presenter guide with demo narrative and walkthrough |
 
 ---
